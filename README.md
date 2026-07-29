@@ -14,9 +14,10 @@
 |------|------|
 | 引擎 | Unreal Engine 5.8 |
 | 语言 | C++20 |
+| IDE | JetBrains Rider |
+| 构建工具链 | Visual Studio 2022 (MSVC) |
 | 输入 | Enhanced Input System |
 | UI | UMG (Unreal Motion Graphics) |
-| 构建 | Visual Studio 2022 |
 
 ## 📁 项目结构
 
@@ -50,19 +51,23 @@ ThunderFighter/
 
 ### 环境要求
 - **Unreal Engine 5.8**（Epic Games Launcher 安装）
-- **Visual Studio 2022**（勾选"使用 C++ 的游戏开发"工作负载）
+- **Visual Studio 2022**（编译器工具链，勾选"使用 C++ 的游戏开发"） — UE 在 Windows 上需要 MSVC 编译器才能构建 C++ 项目
+- **推荐 IDE：JetBrains Rider**（也可用 VS2022 自带的 IDE）
 - **Windows 10/11**
+
+> 💡 **VS2022 ≠ IDE：** 即使使用 Rider 编写代码，仍然需要安装 VS2022 作为底层构建工具链。Rider 会自动检测并使用 VS2022 的 MSVC 编译器和 Windows SDK。如果还没有安装 Rider，需要额外安装 Rider 对 UE 的支持插件。
 
 ### 打开项目
 1. 克隆仓库
    ```bash
    git clone https://github.com/XiaoZe980/ThunderFighter.git
    ```
-2. 右键 `ThunderFighter.uproject` → **Generate Visual Studio project files**
-3. 双击 `ThunderFighter.uproject` 打开
+2. 右键 `ThunderFighter.uproject` → **Generate Visual Studio project files**（生成 Rider 也会用到的项目文件）
+3. 双击 `ThunderFighter.uproject` 打开 UE 编辑器
 
 ### 编译
-- 在 UE 编辑器中：`Ctrl + Alt + F11`
+- **在 UE 编辑器中**：工具栏点击 `Compile` 或按 `Ctrl + Alt + F11`（Rider 中修改代码后，切换回编辑器点 Compile）
+- **在 Rider 中**：Rider 自带 UE 编译支持，可直接 `Build → Build Solution`
 - 或在 VS 中：打开 `.sln` 文件，按 `F5`
 
 ## 📊 开发进度
