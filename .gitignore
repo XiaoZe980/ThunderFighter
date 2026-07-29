@@ -1,0 +1,63 @@
+# ===== Unreal Engine 5 — Standard .gitignore =====
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.sln
+*.slnx
+*.suo
+*.user
+.vsconfig
+
+# Build outputs
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Temporary / cache files
+*.tmp
+*.log
+*.pdb
+*.obj
+*.idb
+*.pch
+*.ilk
+*.exp
+Build/
+BuildReceipts/
+
+# UBT generated
+*.modules
+*.target
+*_BuiltData.uasset
+
+# Windows junk
+Thumbs.db
+Desktop.ini
+
+# macOS junk
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux junk
+*~
+
+# Shader debug
+ShaderAutogen/
+
+# Content backup
+Content/**/*.backup
+
+# Crash dumps
+*.dmp
+CrashReportClient/
+
+# External plugins (keep only what you track)
+# Plugins/*/
+
+# Local config overrides (keep Default*.ini, ignore user-local)
+Saved/Config/WindowsEditor/
+Saved/Config/LinuxEditor/
+Saved/Config/MacEditor/

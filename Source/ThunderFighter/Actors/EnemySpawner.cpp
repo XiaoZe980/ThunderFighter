@@ -1,0 +1,157 @@
+// ThunderFighter - 雷霆战机 EnemySpawner Implementation
+
+#include "EnemySpawner.h"
+#include "EnemyBase.h"
+#include "Engine/World.h"
+
+AEnemySpawner::AEnemySpawner()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AEnemySpawner::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Auto-start spawning if we have pre-defined waves
+	if (Waves.Num() > 0)
+	{
+		StartSpawning();
+	}
+}
+
+void AEnemySpawner::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsSpawning)
+	{
+		ProcessWaves(DeltaTime);
+	}
+}
+
+void AEnemySpawner::StartSpawning()
+{
+	bIsSpawning = true;
+	CurrentWaveIndex = 0;
+	WaveTimer = 0.0f;
+	WaveElapsedTime = 0.0f;
+	EntrySpawnedFlags.Empty();
+}
+
+void AEnemySpawner::StopSpawning()
+{
+	bIsSpawning = false;
+}
+
+void AEnemySpawner::AddWave(const FEnemyWave& Wave)
+{
+	Waves.Add(Wave);
+}
+
+void AEnemySpawner::ClearWaves()
+{
+	Waves.Empty();
+	CurrentWaveIndex = 0;
+	WaveTimer = 0.0f;
+}
+
+AEnemyBase* AEnemySpawner::SpawnEnemy(TSubclassOf<AEnemyBase> EnemyClass, FVector SpawnOffset,
+	float OverrideHealth, float OverrideSpeed)
+{
+	if (!EnemyClass || !GetWorld()) return nullptr;
+
+	FVector SpawnLocation = GetActorLocation() + SpawnOffset;
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AEnemyBase* Enemy = GetWorld()->SpawnActor<AEnemyBase>(
+		EnemyClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+	if (Enemy)
+	{
+		float Health = OverrideHealth > 0.0f ? OverrideHealth : 0.0f;
+		float Speed = OverrideSpeed > 0.0f ? OverrideSpeed : 0.0f;
+		Enemy->Initialize(Speed > 0.0f ? Speed : 300.0f, Health > 0.0f ? Health : 50.0f);
+	}
+
+	return Enemy;
+}
+
+void AEnemySpawner::ProcessWaves(float DeltaTime)
+{
+	if (Waves.Num() == 0) return;
+
+	// Loop timer
+	if (CurrentWaveIndex >= Waves.Num())
+	{
+		if (bLoopWaves)
+		{
+			LoopTimer -= DeltaTime;
+			if (LoopTimer <= 0.0f)
+			{
+				CurrentWaveIndex = 0;
+				WaveTimer = 0.0f;
+				WaveElapsedTime = 0.0f;
+				EntrySpawnedFlags.Empty();
+				LoopTimer = LoopDelay;
+			}
+		}
+		return;
+	}
+
+	const FEnemyWave& CurrentWave = Waves[CurrentWaveIndex];
+
+	// Wait for wave start delay
+	if (WaveTimer < CurrentWave.WaveStartDelay)
+	{
+		WaveTimer += DeltaTime;
+		return;
+	}
+
+	// Initialize spawn tracking
+	if (EntrySpawnedFlags.Num() != CurrentWave.Entries.Num())
+	{
+		EntrySpawnedFlags.Init(false, CurrentWave.Entries.Num());
+		WaveElapsedTime = 0.0f;
+	}
+
+	WaveElapsedTime += DeltaTime;
+
+	// Check each entry for spawning
+	for (int32 i = 0; i < CurrentWave.Entries.Num(); i++)
+	{
+		if (EntrySpawnedFlags[i]) continue;
+
+		const FSpawnEntry& Entry = CurrentWave.Entries[i];
+		if (WaveElapsedTime >= Entry.SpawnDelay)
+		{
+			EntrySpawnedFlags[i] = true;
+
+			// Randomize spawn offset within the spawn area
+			FVector Offset = Entry.SpawnOffset;
+			Offset.Y += FMath::FRandRange(-SpawnAreaWidth, SpawnAreaWidth);
+			Offset.Z += FMath::FRandRange(-SpawnAreaHeight, SpawnAreaHeight);
+
+			SpawnEnemy(Entry.EnemyClass, Offset, Entry.OverrideHealth, Entry.OverrideSpeed);
+		}
+	}
+
+	// Check if all entries in this wave have been spawned
+	bool bAllSpawned = true;
+	for (bool b : EntrySpawnedFlags)
+	{
+		if (!b) { bAllSpawned = false; break; }
+	}
+
+	if (bAllSpawned)
+	{
+		CurrentWaveIndex++;
+		WaveTimer = 0.0f;
+		WaveElapsedTime = 0.0f;
+		EntrySpawnedFlags.Empty();
+		LoopTimer = LoopDelay;
+	}
+}
