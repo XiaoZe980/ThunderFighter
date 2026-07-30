@@ -8,9 +8,6 @@
 
 AThunderFighterGameMode::AThunderFighterGameMode()
 {
-	// Use our custom PlayerController
-	PlayerControllerClass = AThunderFighterPlayerController::StaticClass();
-
 	// Allow ticking
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.0f;

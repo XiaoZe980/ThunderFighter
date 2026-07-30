@@ -16,6 +16,16 @@ void AThunderFighterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Diagnostic: check if input assets are configured
+	if (!GameplayInputMapping)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ThunderFighter] PlayerController: GameplayInputMapping is NULL! Set it in the BP class defaults."));
+	}
+	if (!IA_MoveHorizontal)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ThunderFighter] PlayerController: IA_MoveHorizontal is NULL! Assign it in the BP."));
+	}
+
 	// Add the gameplay input mapping context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -23,6 +33,7 @@ void AThunderFighterPlayerController::BeginPlay()
 		if (GameplayInputMapping)
 		{
 			Subsystem->AddMappingContext(GameplayInputMapping, 0);
+			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Input Mapping Context added successfully."));
 		}
 	}
 }
