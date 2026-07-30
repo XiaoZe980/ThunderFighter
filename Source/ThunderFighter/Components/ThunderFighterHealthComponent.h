@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 HealthComponent
-// Reusable health management component for both player and enemies
+// 玩家和敌人通用的可复用生命值管理组件
 
 #pragma once
 
@@ -12,8 +12,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, CurrentHeal
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageTaken, float, DamageAmount);
 
 /**
- * Component that manages health, damage, and death for any actor.
- * Attach to player ships, enemies, or destructible objects.
+ * 管理任意 Actor 的生命值、伤害和死亡逻辑的组件。
+ * 附加到玩家战机、敌人或可破坏物体上使用。
  */
 UCLASS(ClassGroup=(ThunderFighter), meta=(BlueprintSpawnableComponent))
 class THUNDERFIGHTER_API UThunderFighterHealthComponent : public UActorComponent
@@ -27,57 +27,57 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	/** Apply damage to this actor */
+	/** 对该 Actor 造成伤害 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Health")
 	void TakeDamage(float DamageAmount);
 
-	/** Heal by the specified amount */
+	/** 恢复指定数量的生命值 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Health")
 	void Heal(float HealAmount);
 
-	/** Is this actor still alive? */
+	/** 此 Actor 是否仍然存活？ */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Health")
 	bool IsAlive() const { return CurrentHealth > 0.0f; }
 
-	/** Get current health percentage (0.0 - 1.0) */
+	/** 获取当前生命值百分比（0.0 - 1.0） */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Health")
 	float GetHealthPercent() const { return MaxHealth > 0.0f ? CurrentHealth / MaxHealth : 0.0f; }
 
-	/** Get current health value */
+	/** 获取当前生命值 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Health")
 	float GetCurrentHealth() const { return CurrentHealth; }
 
-	/** Get max health */
+	/** 获取最大生命值 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Health")
 	float GetMaxHealth() const { return MaxHealth; }
 
-	/** Set max health and optionally reset current health */
+	/** 设置最大生命值并可选择重置当前生命值 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Health")
 	void SetMaxHealth(float NewMaxHealth, bool bResetCurrentHealth = true);
 
-	// ---- Delegates ----
+	// ---- 委托 ----
 
-	/** Fired when health reaches zero */
+	/** 生命值归零时触发 */
 	UPROPERTY(BlueprintAssignable, Category = "ThunderFighter|Health")
 	FOnHealthDepleted OnHealthDepleted;
 
-	/** Fired whenever health changes */
+	/** 生命值变化时触发 */
 	UPROPERTY(BlueprintAssignable, Category = "ThunderFighter|Health")
 	FOnHealthChanged OnHealthChanged;
 
-	/** Fired when damage is taken */
+	/** 受到伤害时触发 */
 	UPROPERTY(BlueprintAssignable, Category = "ThunderFighter|Health")
 	FOnDamageTaken OnDamageTaken;
 
 protected:
-	/** Maximum health */
+	/** 最大生命值 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Health")
 	float MaxHealth = 100.0f;
 
-	/** Current health */
+	/** 当前生命值 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Health")
 	float CurrentHealth = 100.0f;
 
-	/** Is this actor dead? (prevents multiple death triggers) */
+	/** 此 Actor 是否已死亡？（防止多次触发死亡事件） */
 	bool bIsDead = false;
 };

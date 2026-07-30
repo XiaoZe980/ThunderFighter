@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 GameMode Implementation
+// ThunderFighter - 雷霆战机 GameMode 实现
 
 #include "ThunderFighterGameMode.h"
 #include "ThunderFighterPlayerController.h"
@@ -8,7 +8,7 @@
 
 AThunderFighterGameMode::AThunderFighterGameMode()
 {
-	// Allow ticking
+	// 允许 Tick
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.0f;
 }
@@ -17,7 +17,7 @@ void AThunderFighterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Find enemy spawner in the level
+	// 在关卡中查找敌人生成器
 	for (TActorIterator<AEnemySpawner> It(GetWorld()); It; ++It)
 	{
 		EnemySpawnerRef = *It;
@@ -34,8 +34,8 @@ void AThunderFighterGameMode::Tick(float DeltaTime)
 		GameOverTimer -= DeltaTime;
 		if (GameOverTimer <= 0.0f)
 		{
-			// Trigger game-over UI or level transition
-			// Default: restart after delay (can be overridden in BP)
+			// 触发游戏结束 UI 或关卡转换
+			// 默认：延迟后重新开始（可在蓝图中重写）
 		}
 	}
 }
@@ -46,8 +46,8 @@ void AThunderFighterGameMode::AddScore(int32 Points)
 
 	CurrentScore += Points;
 
-	// Broadcast score changed event (can be bound by HUD)
-	// Using a simple delegate — can be expanded later
+	// 广播分数变更事件（可由 HUD 绑定）
+	// 使用简单委托——后续可扩展
 }
 
 void AThunderFighterGameMode::OnPlayerDefeated()
@@ -57,13 +57,13 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 	bGameOver = true;
 	GameOverTimer = GameOverDelay;
 
-	// Stop enemy spawning
+	// 停止敌人生成
 	if (EnemySpawnerRef.IsValid())
 	{
 		EnemySpawnerRef->StopSpawning();
 	}
 
-	// Notify via log
+	// 通过日志通知
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player defeated! Final Score: %d"), CurrentScore);
 }
 

@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 WeaponComponent Implementation
+// ThunderFighter - 雷霆战机 WeaponComponent 实现
 
 #include "ThunderFighterWeaponComponent.h"
 #include "Actors/ProjectileBase.h"
@@ -8,26 +8,26 @@ UThunderFighterWeaponComponent::UThunderFighterWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// Default firing patterns at various weapon levels
-	// Level 1: single center shot
+	// 各武器等级的默认射击模式
+	// 1 级：单发居中
 	PatternLevel1.Add(FVector(100.0f, 0.0f, 0.0f));
 
-	// Level 2: twin shot
+	// 2 级：双发
 	PatternLevel2.Add(FVector(100.0f, -20.0f, 0.0f));
 	PatternLevel2.Add(FVector(100.0f, 20.0f, 0.0f));
 
-	// Level 3: triple shot
+	// 3 级：三连发
 	PatternLevel3.Add(FVector(100.0f, -30.0f, 0.0f));
 	PatternLevel3.Add(FVector(100.0f, 0.0f, 0.0f));
 	PatternLevel3.Add(FVector(100.0f, 30.0f, 0.0f));
 
-	// Level 4: quad shot
+	// 4 级：四连发
 	PatternLevel4.Add(FVector(100.0f, -40.0f, 0.0f));
 	PatternLevel4.Add(FVector(100.0f, -15.0f, 0.0f));
 	PatternLevel4.Add(FVector(100.0f, 15.0f, 0.0f));
 	PatternLevel4.Add(FVector(100.0f, 40.0f, 0.0f));
 
-	// Level 5: wide spread
+	// 5 级：宽幅扩散
 	PatternLevel5.Add(FVector(100.0f, -50.0f, 0.0f));
 	PatternLevel5.Add(FVector(100.0f, -25.0f, 0.0f));
 	PatternLevel5.Add(FVector(100.0f, 0.0f, 0.0f));
@@ -57,7 +57,7 @@ void UThunderFighterWeaponComponent::TickComponent(float DeltaTime, ELevelTick T
 void UThunderFighterWeaponComponent::StartFiring()
 {
 	bIsFiring = true;
-	FireTimer = 0.0f; // Fire immediately
+	FireTimer = 0.0f; // 立即开火
 }
 
 void UThunderFighterWeaponComponent::StopFiring()
@@ -71,8 +71,8 @@ void UThunderFighterWeaponComponent::ActivateBomb()
 
 	BombCount--;
 
-	// Bomb clears all enemy projectiles and damages all enemies on screen
-	// Implementation will connect to a manager or iterate over actors
+	// 炸弹清除所有敌方弹幕并对屏幕上所有敌人造成伤害
+	// 实现将与管理器连接或遍历所有 Actor
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] BOMB activated! %d remaining"), BombCount);
 }
 

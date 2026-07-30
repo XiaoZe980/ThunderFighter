@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 EnemyBase
-// Base class for all enemy aircraft
+// 所有敌方战机的基类
 
 #pragma once
 
@@ -15,8 +15,8 @@ class UCurveFloat;
 class UCurveVector;
 
 /**
- * Base enemy class with health, scoring, and configurable movement patterns.
- * Derive in Blueprint for specific enemy types (grunt, shooter, rammer, boss).
+ * 敌方基类，具有生命值、计分和可配置的移动模式。
+ * 在蓝图中派生出特定的敌人类型（小兵、射手、冲撞者、Boss）。
  */
 UCLASS()
 class THUNDERFIGHTER_API AEnemyBase : public AActor
@@ -31,98 +31,98 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// ---- Components ----
+	// ---- 组件 ----
 
-	/** Collision box */
+	/** 碰撞盒 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UBoxComponent> CollisionBox;
 
-	/** Visual mesh */
+	/** 视觉网格体 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UStaticMeshComponent> EnemyMesh;
 
-	/** Health component */
+	/** 生命值组件 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UThunderFighterHealthComponent> HealthComponent;
 
-	/** Projectile pattern component (optional, for enemies that shoot) */
+	/** 弹幕模式组件（可选，用于会射击的敌人） */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UProjectilePatternComponent> ProjectilePattern;
 
 public:
-	// ---- Movement ----
+	// ---- 移动 ----
 
 	/**
-	 * Movement curve defining the enemy's path over time.
-	 * X axis = time (seconds), Y axis = horizontal offset.
+	 * 定义敌人随时间运动路径的移动曲线。
+	 * X 轴 = 时间（秒），Y 轴 = 水平偏移。
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	TObjectPtr<UCurveFloat> MovementCurveX;
 
 	/**
-	 * Movement curve for vertical offset over time.
+	 * 随时间变化的垂直偏移移动曲线。
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	TObjectPtr<UCurveFloat> MovementCurveY;
 
-	/** Base movement speed multiplier */
+	/** 基础移动速度倍率 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	float MoveSpeedMultiplier = 1.0f;
 
-	/** Starting direction (normalized). Default: move downward (-Y for top-down view) */
+	/** 初始方向（归一化）。默认：向下移动（俯视视角下为 -Y） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	FVector BaseDirection = FVector(-1.0f, 0.0f, 0.0f);
 
-	/** Base speed (units/sec) */
+	/** 基础速度（单位/秒） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	float BaseSpeed = 300.0f;
 
-	// ---- Combat ----
+	// ---- 战斗 ----
 
-	/** Score awarded on destruction */
+	/** 被摧毁时奖励的分数 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	int32 ScoreValue = 100;
 
-	/** Whether this enemy can fire projectiles */
+	/** 此敌人是否可以发射弹幕 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	bool bCanShoot = false;
 
-	/** Fire interval when shooting (seconds) */
+	/** 射击间隔（秒） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float FireInterval = 1.5f;
 
-	/** Start firing after this many seconds on screen */
+	/** 出现在屏幕上此秒数后开始射击 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float FireStartDelay = 1.0f;
 
-	/** Drop rate for pickups (0.0 - 1.0) */
+	/** 道具掉落率（0.0 - 1.0） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float DropRate = 0.3f;
 
-	// ---- Functions ----
+	// ---- 函数 ----
 
-	/** Initialize enemy with a specific speed override */
+	/** 使用指定速度覆盖来初始化敌人 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Enemy")
 	void Initialize(float InSpeed, float InHealth);
 
-	/** Set the base direction for movement */
+	/** 设置移动的基础方向 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Enemy")
 	void SetBaseDirection(FVector NewDirection) { BaseDirection = NewDirection.GetSafeNormal(); }
 
 protected:
-	/** Called when health reaches zero */
+	/** 生命值归零时调用 */
 	UFUNCTION()
 	void OnEnemyDefeated();
 
-	/** Apply movement for this frame based on curves or base direction */
+	/** 根据曲线或基础方向应用本帧移动 */
 	void ApplyMovement(float DeltaTime);
 
-	/** Time since spawn */
+	/** 生成后已存活时间 */
 	float AliveTime = 0.0f;
 
-	/** Fire timer */
+	/** 射击计时器 */
 	float FireTimer = 0.0f;
 
-	/** Has shooting started? */
+	/** 是否已开始射击？ */
 	bool bHasStartedShooting = false;
 };

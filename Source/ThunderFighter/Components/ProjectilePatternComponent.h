@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 ProjectilePatternComponent
-// Configurable bullet pattern emitter for enemies and bosses
+// 敌人和 Boss 的可配置子弹模式发射器
 
 #pragma once
 
@@ -9,8 +9,8 @@
 #include "ProjectilePatternComponent.generated.h"
 
 /**
- * Attach to enemy actors to define their bullet firing patterns.
- * Supports multiple pattern types: single, spread, circle, spiral.
+ * 附加到敌人 Actor 上以定义其子弹发射模式。
+ * 支持多种模式类型：单发、散射、圆形、螺旋。
  */
 UCLASS(ClassGroup=(ThunderFighter), meta=(BlueprintSpawnableComponent))
 class THUNDERFIGHTER_API UProjectilePatternComponent : public UActorComponent
@@ -22,57 +22,57 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/** Fire a single projectile straight ahead */
+	/** 沿正前方发射单发弹幕 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void FireSingle(FVector Direction, float Speed, float Damage);
 
-	/** Fire a spread (fan) of projectiles */
+	/** 发射扇形散射弹幕 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void FireSpread(int32 Count, float SpreadAngle, float Speed, float Damage);
 
-	/** Fire projectiles in a full circle */
+	/** 发射圆形弹幕 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void FireCircle(int32 Count, float Speed, float Damage, float StartAngle = 0.0f);
 
-	/** Fire towards a target position (aimed shot) */
+	/** 向目标位置发射（瞄准射击） */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void FireAtTarget(FVector TargetLocation, float Speed, float Damage, float Inaccuracy = 0.0f);
 
-	/** Fire towards the player */
+	/** 向玩家发射 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void FireAtPlayer(float Speed, float Damage, float Inaccuracy = 0.0f);
 
-	/** Enable/disable automatic firing */
+	/** 启用/禁用自动射击 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void SetAutoFire(bool bEnable, float FireInterval);
 
-	/** Set the projectile class to spawn */
+	/** 设置要生成的弹幕类型 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void SetProjectileClass(TSubclassOf<AProjectileBase> InClass) { ProjectileClass = InClass; }
 
 protected:
-	/** Spawn a single projectile */
+	/** 生成单个弹幕 */
 	AProjectileBase* SpawnProjectile(FVector Direction, float Speed, float Damage);
 
-	/** The faction for spawned projectiles */
+	/** 生成弹幕的阵营 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Projectile")
 	EProjectileFaction Faction = EProjectileFaction::Enemy;
 
-	/** Projectile class to spawn */
+	/** 要生成的弹幕类型 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Projectile")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
-	/** Random spread applied to each shot (degrees) */
+	/** 每次射击的随机散布（度） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Projectile")
 	float BaseInaccuracy = 0.0f;
 
 private:
-	/** Auto-fire state */
+	/** 自动射击状态 */
 	bool bAutoFire = false;
 
-	/** Auto-fire interval */
+	/** 自动射击间隔 */
 	float AutoFireInterval = 0.5f;
 
-	/** Auto-fire timer */
+	/** 自动射击计时器 */
 	float AutoFireTimer = 0.0f;
 };

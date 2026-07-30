@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 ScrollingBackground Implementation
+// ThunderFighter - 雷霆战机 ScrollingBackground 实现
 
 #include "ScrollingBackground.h"
 #include "Components/StaticMeshComponent.h"
@@ -20,7 +20,7 @@ void AScrollingBackground::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Position the second plane to follow the first
+	// 将第二个平面定位在第一个平面之后
 	PlaneOffset = -ScrollDirection.GetSafeNormal() * PlaneLength;
 	BackgroundPlane2->SetRelativeLocation(PlaneOffset);
 }
@@ -39,7 +39,7 @@ void AScrollingBackground::ScrollPlanes(float DeltaTime)
 {
 	FVector Movement = ScrollDirection.GetSafeNormal() * ScrollSpeed * DeltaTime;
 
-	// Move both planes
+	// 移动两个平面
 	BackgroundPlane1->AddWorldOffset(Movement, true);
 	BackgroundPlane2->AddWorldOffset(Movement, true);
 
@@ -49,28 +49,28 @@ void AScrollingBackground::ScrollPlanes(float DeltaTime)
 	FVector ScrollDir = ScrollDirection.GetSafeNormal();
 	float LoopThreshold = PlaneLength;
 
-	// Check if Plane1 has scrolled past the loop point
+	// 检查 Plane1 是否已滚动超过循环点
 	float Plane1Dot = FVector::DotProduct(Plane1Pos, ScrollDir);
 	float Plane2Dot = FVector::DotProduct(Plane2Pos, ScrollDir);
 
-	// Plane1 is "ahead" if its dot product is larger (further along scroll direction)
+	// 若 Plane1 点积更大（沿滚动方向更远）则 Plane1 位于"前方"
 	if (ScrollSpeed > 0.0f)
 	{
-		// Scrolling forward: Plane1 is ahead
+		// 向前滚动：Plane1 在前
 		if (Plane2Dot < Plane1Dot - LoopThreshold)
 		{
-			// Plane2 is too far behind, move it ahead of Plane1
+			// Plane2 落后太多，将其移到 Plane1 前方
 			BackgroundPlane2->SetWorldLocation(Plane1Pos + ScrollDir * LoopThreshold);
 		}
 		else if (Plane1Dot < Plane2Dot - LoopThreshold)
 		{
-			// Plane1 is too far behind, move it ahead of Plane2
+			// Plane1 落后太多，将其移到 Plane2 前方
 			BackgroundPlane1->SetWorldLocation(Plane2Pos + ScrollDir * LoopThreshold);
 		}
 	}
 	else
 	{
-		// Scrolling backward
+		// 向后滚动
 		if (Plane2Dot > Plane1Dot + LoopThreshold)
 		{
 			BackgroundPlane2->SetWorldLocation(Plane1Pos - ScrollDir * LoopThreshold);

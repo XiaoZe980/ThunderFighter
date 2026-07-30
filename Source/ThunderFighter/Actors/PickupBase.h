@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 PickupBase
-// Base class for power-up pickups dropped by enemies
+// 敌人掉落的强化道具基类
 
 #pragma once
 
@@ -13,19 +13,19 @@ class UThunderFighterWeaponComponent;
 class UThunderFighterHealthComponent;
 
 /**
- * Type of pickup item.
+ * 拾取道具类型。
  */
 UENUM(BlueprintType)
 enum class EPickupType : uint8
 {
-	WeaponUpgrade	UMETA(DisplayName = "Weapon Upgrade (W)"),
-	HealthRestore	UMETA(DisplayName = "Health Restore (H)"),
-	Bomb			UMETA(DisplayName = "Bomb (B)"),
-	ScoreBonus		UMETA(DisplayName = "Score Bonus (S)")
+	WeaponUpgrade	UMETA(DisplayName = "武器升级 (W)"),
+	HealthRestore	UMETA(DisplayName = "生命恢复 (H)"),
+	Bomb			UMETA(DisplayName = "炸弹 (B)"),
+	ScoreBonus		UMETA(DisplayName = "分数奖励 (S)")
 };
 
 /**
- * Pickup actor. Floats/drifts downward, and applies an effect when collected by the player.
+ * 拾取道具 Actor。悬浮/向下漂移，被玩家收集时应用效果。
  */
 UCLASS()
 class THUNDERFIGHTER_API APickupBase : public AActor
@@ -40,62 +40,62 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// ---- Components ----
+	// ---- 组件 ----
 
-	/** Trigger sphere for pickup detection */
+	/** 用于检测拾取碰撞的触发球体 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<USphereComponent> TriggerSphere;
 
-	/** Visual mesh */
+	/** 视觉网格体 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UStaticMeshComponent> PickupMesh;
 
 public:
-	/** Initialize this pickup with a type and value */
+	/** 使用类型和数值初始化此拾取道具 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Pickup")
 	void Initialize(EPickupType InType, float InValue = 0.0f);
 
-	/** Get the pickup type */
+	/** 获取拾取道具类型 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Pickup")
 	EPickupType GetPickupType() const { return PickupType; }
 
 protected:
-	/** Called when player overlaps the trigger */
+	/** 玩家与触发器重叠时调用 */
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	/** Apply the pickup effect to the player */
+	/** 对玩家 Actor 应用拾取效果 */
 	void ApplyEffect(AActor* PlayerActor);
 
-	/** Type of this pickup */
+	/** 此拾取道具的类型 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Pickup")
 	EPickupType PickupType = EPickupType::WeaponUpgrade;
 
-	/** Value (e.g. health amount, score points, weapon level increment) */
+	/** 数值（例如生命值数量、分数点数、武器等级增量） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Pickup")
 	float Value = 1.0f;
 
-	/** Float animation speed (bobbing) */
+	/** 浮动动画速度（上下抖动） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Pickup")
 	float FloatSpeed = 2.0f;
 
-	/** Float amplitude */
+	/** 浮动幅度 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Pickup")
 	float FloatAmplitude = 10.0f;
 
-	/** Downward drift speed */
+	/** 向下漂移速度 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Pickup")
 	float DriftSpeed = 100.0f;
 
-	/** Lifetime before auto-destroy (seconds) */
+	/** 自动销毁前的生命周期（秒） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Pickup")
 	float Lifetime = 10.0f;
 
 private:
-	/** Initial Z position for float animation */
+	/** 浮动动画的初始 Z 坐标 */
 	float InitialZ = 0.0f;
 
-	/** Lifetime accumulator */
+	/** 生命周期累计值 */
 	float LifetimeTimer = 0.0f;
 };

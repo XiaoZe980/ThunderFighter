@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 EnemySpawner Implementation
+// ThunderFighter - 雷霆战机 EnemySpawner 实现
 
 #include "EnemySpawner.h"
 #include "EnemyBase.h"
@@ -13,7 +13,7 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Auto-start spawning if we have pre-defined waves
+	// 如果有预定义波次则自动开始生成
 	if (Waves.Num() > 0)
 	{
 		StartSpawning();
@@ -84,7 +84,7 @@ void AEnemySpawner::ProcessWaves(float DeltaTime)
 {
 	if (Waves.Num() == 0) return;
 
-	// Loop timer
+	// 循环计时器
 	if (CurrentWaveIndex >= Waves.Num())
 	{
 		if (bLoopWaves)
@@ -104,14 +104,14 @@ void AEnemySpawner::ProcessWaves(float DeltaTime)
 
 	const FEnemyWave& CurrentWave = Waves[CurrentWaveIndex];
 
-	// Wait for wave start delay
+	// 等待波次开始延迟
 	if (WaveTimer < CurrentWave.WaveStartDelay)
 	{
 		WaveTimer += DeltaTime;
 		return;
 	}
 
-	// Initialize spawn tracking
+	// 初始化生成追踪
 	if (EntrySpawnedFlags.Num() != CurrentWave.Entries.Num())
 	{
 		EntrySpawnedFlags.Init(false, CurrentWave.Entries.Num());
@@ -120,7 +120,7 @@ void AEnemySpawner::ProcessWaves(float DeltaTime)
 
 	WaveElapsedTime += DeltaTime;
 
-	// Check each entry for spawning
+	// 检查每个条目是否需要生成
 	for (int32 i = 0; i < CurrentWave.Entries.Num(); i++)
 	{
 		if (EntrySpawnedFlags[i]) continue;
@@ -130,7 +130,7 @@ void AEnemySpawner::ProcessWaves(float DeltaTime)
 		{
 			EntrySpawnedFlags[i] = true;
 
-			// Randomize spawn offset within the spawn area
+			// 在生成区域内随机化生成偏移
 			FVector Offset = Entry.SpawnOffset;
 			Offset.Y += FMath::FRandRange(-SpawnAreaWidth, SpawnAreaWidth);
 			Offset.Z += FMath::FRandRange(-SpawnAreaHeight, SpawnAreaHeight);
@@ -139,7 +139,7 @@ void AEnemySpawner::ProcessWaves(float DeltaTime)
 		}
 	}
 
-	// Check if all entries in this wave have been spawned
+	// 检查此波次的所有条目是否都已生成
 	bool bAllSpawned = true;
 	for (bool b : EntrySpawnedFlags)
 	{

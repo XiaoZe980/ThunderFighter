@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 ProjectileBase
-// Base class for all projectiles (player and enemy bullets)
+// 所有弹幕的基类（玩家和敌方子弹）
 
 #pragma once
 
@@ -11,19 +11,19 @@ class UProjectileMovementComponent;
 class USphereComponent;
 
 /**
- * Faction identifier for projectiles.
- * Determines which actors a projectile can damage.
+ * 弹幕的阵营标识。
+ * 决定弹幕可以对哪些 Actor 造成伤害。
  */
 UENUM(BlueprintType)
 enum class EProjectileFaction : uint8
 {
-	Player	UMETA(DisplayName = "Player"),
-	Enemy	UMETA(DisplayName = "Enemy")
+	Player	UMETA(DisplayName = "玩家"),
+	Enemy	UMETA(DisplayName = "敌方")
 };
 
 /**
- * Base projectile class. Moves in a straight line at constant speed.
- * Can damage actors of the opposing faction on collision.
+ * 弹幕基类。以恒定速度直线移动。
+ * 碰撞时可对敌对阵营的 Actor 造成伤害。
  */
 UCLASS()
 class THUNDERFIGHTER_API AProjectileBase : public AActor
@@ -36,69 +36,69 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/**
-	 * Initialize the projectile after spawning.
-	 * @param InSpeed Movement speed (units/sec)
-	 * @param InDamage Damage dealt on hit
-	 * @param InFaction Which side this projectile belongs to
+	 * 生成后初始化弹幕。
+	 * @param InSpeed 移动速度（单位/秒）
+	 * @param InDamage 命中时造成的伤害
+	 * @param InFaction 此弹幕所属的阵营
 	 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void Initialize(float InSpeed, float InDamage, EProjectileFaction InFaction);
 
-	/** Get the faction of this projectile */
+	/** 获取此弹幕的阵营 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Projectile")
 	EProjectileFaction GetFaction() const { return Faction; }
 
-	/** Get the damage value */
+	/** 获取伤害值 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Projectile")
 	float GetDamage() const { return Damage; }
 
-	/** Set projectile lifetime (auto-destroy after this many seconds) */
+	/** 设置弹幕生命周期（此秒数后自动销毁） */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void SetLifetime(float InLifetime);
 
 protected:
 	virtual void BeginPlay() override;
 
-	/** Called when projectile hits something */
+	/** 弹幕命中物体时调用 */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	/** Deactivate and return this projectile to pool (or destroy) */
+	/** 停用此弹幕并返回对象池（或销毁） */
 	void DeactivateProjectile();
 
-	// ---- Components ----
+	// ---- 组件 ----
 
-	/** Sphere collision */
+	/** 球体碰撞体 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<USphereComponent> CollisionSphere;
 
-	/** Visual mesh */
+	/** 视觉网格体 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
 
-	/** Projectile movement */
+	/** 弹幕移动组件 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 
-	// ---- Properties ----
+	// ---- 属性 ----
 
-	/** Projectile speed */
+	/** 弹幕速度 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Projectile")
 	float Speed = 2000.0f;
 
-	/** Damage dealt on hit */
+	/** 命中时造成的伤害 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Projectile")
 	float Damage = 10.0f;
 
-	/** Which side this projectile belongs to */
+	/** 此弹幕所属的阵营 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Projectile")
 	EProjectileFaction Faction = EProjectileFaction::Player;
 
-	/** Lifetime before auto-destroy (0 = infinite, managed externally) */
+	/** 自动销毁前的生命周期（0 = 无限，由外部管理） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Projectile")
 	float MaxLifetime = 5.0f;
 
-	/** Current lifetime accumulator */
+	/** 当前生命周期累计值 */
 	float LifetimeTimer = 0.0f;
 };

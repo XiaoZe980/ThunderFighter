@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 HUD Implementation
+// ThunderFighter - 雷霆战机 HUD 实现
 
 #include "ThunderFighterHUD.h"
 #include "Blueprint/UserWidget.h"
@@ -12,7 +12,7 @@ void AThunderFighterHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Show gameplay HUD when the game starts
+	// 游戏开始时显示游戏玩法 HUD
 	ShowGameplayHUD();
 }
 
@@ -45,7 +45,7 @@ void AThunderFighterHUD::ShowGameOverScreen(int32 FinalScore, int32 HighScore)
 	GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass);
 	if (GameOverWidget)
 	{
-		GameOverWidget->AddToViewport(10); // High Z-order
+		GameOverWidget->AddToViewport(10); // 高 Z-Order
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Game Over! Score: %d | High Score: %d"), FinalScore, HighScore);

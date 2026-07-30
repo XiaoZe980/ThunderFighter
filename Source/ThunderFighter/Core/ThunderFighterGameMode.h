@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 GameMode
-// Manages game rules, scoring, wave control, and game state transitions
+// 管理游戏规则、计分、波次控制和游戏状态转换
 
 #pragma once
 
@@ -10,8 +10,8 @@
 class AEnemySpawner;
 
 /**
- * GameMode for ThunderFighter.
- * Controls wave spawning, scoring, and game-over conditions.
+ * ThunderFighter 的 GameMode。
+ * 控制波次生成、计分和游戏结束条件。
  */
 UCLASS()
 class THUNDERFIGHTER_API AThunderFighterGameMode : public AGameModeBase
@@ -24,47 +24,47 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	/** Add score for the player */
+	/** 为玩家添加分数 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Scoring")
 	void AddScore(int32 Points);
 
-	/** Get current score */
+	/** 获取当前分数 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Scoring")
 	int32 GetScore() const { return CurrentScore; }
 
-	/** Player has been defeated — trigger game over */
+	/** 玩家被击败——触发游戏结束 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|GameState")
 	void OnPlayerDefeated();
 
-	/** Restart the current level */
+	/** 重新开始当前关卡 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|GameState")
 	void RestartGame();
 
-	/** Return to main menu */
+	/** 返回主菜单 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|GameState")
 	void ReturnToMainMenu();
 
 protected:
-	/** Score accumulated this session */
+	/** 本局累计分数 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Scoring")
 	int32 CurrentScore = 0;
 
-	/** Is the game currently over? */
+	/** 游戏是否已结束？ */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|GameState")
 	bool bGameOver = false;
 
-	/** Time in seconds before game-over actions trigger */
+	/** 游戏结束动作触发前的等待时间（秒） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|GameState")
 	float GameOverDelay = 3.0f;
 
-	/** Timer handle for game-over delay */
+	/** 游戏结束延迟计时器句柄 */
 	float GameOverTimer = 0.0f;
 
-	/** Reference to the enemy spawner in the level */
+	/** 关卡中敌人生成器的引用 */
 	UPROPERTY()
 	TWeakObjectPtr<AEnemySpawner> EnemySpawnerRef;
 
-	/** Name of the main menu level */
+	/** 主菜单关卡名称 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Levels")
 	FName MainMenuLevelName = TEXT("MainMenu");
 };

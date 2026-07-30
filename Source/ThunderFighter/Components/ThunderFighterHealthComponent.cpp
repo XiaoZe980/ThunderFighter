@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 HealthComponent Implementation
+// ThunderFighter - 雷霆战机 HealthComponent 实现
 
 #include "ThunderFighterHealthComponent.h"
 

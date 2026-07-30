@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 PlayerPawn Implementation
+// ThunderFighter - 雷霆战机 PlayerPawn 实现
 
 #include "ThunderFighterPlayerPawn.h"
 #include "Components/ThunderFighterHealthComponent.h"
@@ -15,34 +15,34 @@ AThunderFighterPlayerPawn::AThunderFighterPlayerPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Root collision box
+	// 根碰撞盒
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetBoxExtent(FVector(20.0f, 20.0f, 5.0f));
 	CollisionBox->SetCollisionProfileName(TEXT("Pawn"));
 	SetRootComponent(CollisionBox);
 
-	// Ship mesh
+	// 战机网格体
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMesh->SetupAttachment(RootComponent);
 	ShipMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	// Health component
+	// 生命值组件
 	HealthComponent = CreateDefaultSubobject<UThunderFighterHealthComponent>(TEXT("HealthComponent"));
 
-	// Weapon component
+	// 武器组件
 	WeaponComponent = CreateDefaultSubobject<UThunderFighterWeaponComponent>(TEXT("WeaponComponent"));
 
-	// Spring arm — holds camera above the player, looking down
+	// 弹簧臂——将摄像机悬停在玩家上方，俯视视角
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(RootComponent);
-	CameraSpringArm->TargetArmLength = 3000.0f;                       // Height above the battlefield
-	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f)); // Pitch down for top-down view
-	CameraSpringArm->bDoCollisionTest = false;                        // Don't clip against geometry
+	CameraSpringArm->TargetArmLength = 3000.0f;                       // 战场上方高度
+	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f)); // 向下倾斜以实现俯视视角
+	CameraSpringArm->bDoCollisionTest = false;                        // 不与几何体碰撞
 	CameraSpringArm->bInheritPitch = false;
 	CameraSpringArm->bInheritYaw = false;
 	CameraSpringArm->bInheritRoll = false;
 
-	// Top-down camera
+	// 俯视摄像机
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 	FollowCamera->SetProjectionMode(ECameraProjectionMode::Perspective);
@@ -53,13 +53,13 @@ void AThunderFighterPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Bind health depleted event
+	// 绑定生命值耗尽事件
 	if (HealthComponent)
 	{
 		HealthComponent->OnHealthDepleted.AddDynamic(this, &AThunderFighterPlayerPawn::OnHealthDepleted);
 	}
 
-	// Auto-fire: player shoots automatically, no need to hold a button
+	// 自动射击：玩家自动开火，无需按住按钮
 	if (bAutoFireEnabled)
 	{
 		StartFiring();
@@ -70,7 +70,7 @@ void AThunderFighterPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Handle invincibility timer
+	// 处理无敌计时器
 	if (bIsInvincible)
 	{
 		InvincibilityTimer -= DeltaTime;
@@ -149,17 +149,17 @@ void AThunderFighterPlayerPawn::GetScreenWorldBounds(float& OutMinX, float& OutM
 	int32 ViewportX, ViewportY;
 	PC->GetViewportSize(ViewportX, ViewportY);
 
-	// Apply margin as a fraction of viewport edges
+	// 将边距作为视口边缘的比例应用
 	const float MarginX = ViewportX * ScreenBoundaryMargin;
 	const float MarginY = ViewportY * ScreenBoundaryMargin;
 
-	// Deproject 4 corners of the screen (with margin) to find where they hit the player's Z plane
+	// 反投影屏幕的 4 个角（带边距），找出它们与玩家 Z 平面的交点
 	auto DeprojectToPlane = [&](float ScreenX, float ScreenY) -> FVector2D
 	{
 		FVector Origin, Direction;
 		PC->DeprojectScreenPositionToWorld(ScreenX, ScreenY, Origin, Direction);
 
-		// Intersect ray with the horizontal plane at the player's Z
+		// 计算射线与玩家 Z 坐标处水平面的交点
 		float PlayerZ = GetActorLocation().Z;
 		float T = (PlayerZ - Origin.Z) / Direction.Z;
 		FVector HitPoint = Origin + Direction * T;
@@ -177,18 +177,18 @@ void AThunderFighterPlayerPawn::GetScreenWorldBounds(float& OutMinX, float& OutM
 	OutMaxY = FMath::Max(FMath::Max(TopLeft.Y, TopRight.Y), FMath::Max(BottomLeft.Y, BottomRight.Y));
 }
 
-// Health depleted callback — to be wired up in BeginPlay
+// 生命值耗尽回调——在 BeginPlay 中绑定
 void AThunderFighterPlayerPawn::OnHealthDepleted()
 {
 	StopFiring();
 
-	// Disable collision
+	// 禁用碰撞
 	if (CollisionBox)
 	{
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
-	// Notify GameMode
+	// 通知 GameMode
 	if (AThunderFighterGameMode* GM = Cast<AThunderFighterGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		GM->OnPlayerDefeated();

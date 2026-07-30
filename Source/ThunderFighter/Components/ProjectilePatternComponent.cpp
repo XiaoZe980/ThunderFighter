@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 ProjectilePatternComponent Implementation
+// ThunderFighter - 雷霆战机 ProjectilePatternComponent 实现
 
 #include "ProjectilePatternComponent.h"
 #include "Actors/ProjectileBase.h"
@@ -37,7 +37,7 @@ void UProjectilePatternComponent::FireSpread(int32 Count, float SpreadAngle, flo
 	float AngleStep = (Count > 1) ? (SpreadAngle / (Count - 1)) : 0.0f;
 	float StartAngle = -HalfSpread;
 
-	FVector BaseDirection = FVector(1.0f, 0.0f, 0.0f); // Forward in game space
+	FVector BaseDirection = FVector(1.0f, 0.0f, 0.0f); // 游戏空间中的正前方
 
 	for (int32 i = 0; i < Count; i++)
 	{

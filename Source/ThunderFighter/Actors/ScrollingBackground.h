@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 ScrollingBackground
-// Infinitely scrolling background for the shoot-em-up level
+// 射击游戏关卡中无限滚动的背景
 
 #pragma once
 
@@ -10,8 +10,8 @@
 class UStaticMeshComponent;
 
 /**
- * Manages two background planes that scroll continuously and loop.
- * Place in level behind the gameplay area.
+ * 管理两个连续滚动并循环的背景平面。
+ * 放置在游戏区域后方的关卡中。
  */
 UCLASS()
 class THUNDERFIGHTER_API AScrollingBackground : public AActor
@@ -26,39 +26,39 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// ---- Components ----
+	// ---- 组件 ----
 
-	/** Primary background plane */
+	/** 主背景平面 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UStaticMeshComponent> BackgroundPlane1;
 
-	/** Secondary background plane (follows behind for seamless loop) */
+	/** 副背景平面（跟随主平面后方以实现无缝循环） */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UStaticMeshComponent> BackgroundPlane2;
 
 public:
-	// ---- Configuration ----
+	// ---- 配置 ----
 
-	/** Scroll speed (units/sec). Positive = scroll downward. */
+	/** 滚动速度（单位/秒）。正值 = 向下滚动。 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	float ScrollSpeed = 200.0f;
 
-	/** Direction of scrolling */
+	/** 滚动方向 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	FVector ScrollDirection = FVector(-1.0f, 0.0f, 0.0f);
 
-	/** Length of each background plane (in scroll direction). When a plane moves past this offset, it loops. */
+	/** 每个背景平面的长度（沿滚动方向）。当平面移动超过此偏移时循环。 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	float PlaneLength = 2000.0f;
 
-	/** Enable/disable scrolling */
+	/** 启用/禁用滚动 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	bool bEnableScrolling = true;
 
 protected:
-	/** Update scroll position and handle looping */
+	/** 更新滚动位置并处理循环 */
 	void ScrollPlanes(float DeltaTime);
 
-	/** Offset between the two planes at start */
+	/** 两个平面之间的初始偏移 */
 	FVector PlaneOffset;
 };

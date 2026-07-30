@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 PlayerPawn
-// Player-controlled fighter aircraft
+// 玩家控制的战斗机
 
 #pragma once
 
@@ -14,8 +14,8 @@ class UCameraComponent;
 class UBoxComponent;
 
 /**
- * Player fighter pawn. Controlled via EnhancedInput through PlayerController.
- * Handles movement within screen bounds, auto-firing, and bomb usage.
+ * 玩家战斗机 Pawn。通过 PlayerController 的 EnhancedInput 控制。
+ * 处理屏幕边界内的移动、自动射击和炸弹使用。
  */
 UCLASS()
 class THUNDERFIGHTER_API AThunderFighterPlayerPawn : public APawn
@@ -30,97 +30,97 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// ---- Components ----
+	// ---- 组件 ----
 
-	/** Root collision box for the player ship */
+	/** 玩家战机的根碰撞盒 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UBoxComponent> CollisionBox;
 
-	/** Static mesh or sprite for the player ship */
+	/** 玩家战机的静态网格体或精灵 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UStaticMeshComponent> ShipMesh;
 
-	/** Health component */
+	/** 生命值组件 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UThunderFighterHealthComponent> HealthComponent;
 
-	/** Weapon component */
+	/** 武器组件 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UThunderFighterWeaponComponent> WeaponComponent;
 
-	/** Spring arm for top-down camera */
+	/** 俯视摄像机的弹簧臂 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 
-	/** Top-down camera */
+	/** 俯视摄像机 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")
 	TObjectPtr<UCameraComponent> FollowCamera;
 
 public:
-	// ---- Movement ----
+	// ---- 移动 ----
 
-	/** Add world-space movement input (clamped to screen bounds) */
+	/** 添加世界空间移动输入（限制在屏幕边界内） */
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 
-	/** Movement speed (units/sec) */
+	/** 移动速度（单位/秒） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	float MoveSpeed = 1200.0f;
 
-	/** Screen boundary margin (percentage of viewport, 0.0-0.5) */
+	/** 屏幕边界边距（视口百分比，0.0-0.5） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	float ScreenBoundaryMargin = 0.05f;
 
-	// ---- Firing ----
+	// ---- 射击 ----
 
-	/** Start auto-firing */
+	/** 开始自动射击 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Combat")
 	void StartFiring();
 
-	/** Stop auto-firing */
+	/** 停止自动射击 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Combat")
 	void StopFiring();
 
-	/** Use a bomb (screen-clearing attack) */
+	/** 使用炸弹（清屏攻击） */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Combat")
 	void UseBomb();
 
-	/** Is the player currently firing? */
+	/** 玩家当前是否在射击？ */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Combat")
 	bool IsFiring() const { return bIsFiring; }
 
-	/** If true, the player fires automatically (default for STG games) */
+	/** 若为 true，玩家自动射击（STG 游戏默认行为） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	bool bAutoFireEnabled = true;
 
-	// ---- Invincibility ----
+	// ---- 无敌 ----
 
-	/** Grant temporary invincibility (e.g. after taking damage) */
+	/** 授予临时无敌状态（例如受到伤害后） */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Combat")
 	void GrantInvincibility(float Duration);
 
-	/** Is the player currently invincible? */
+	/** 玩家当前是否处于无敌状态？ */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Combat")
 	bool IsInvincible() const { return bIsInvincible; }
 
 protected:
-	/** Called when health reaches zero */
+	/** 生命值归零时调用 */
 	UFUNCTION()
 	void OnHealthDepleted();
 
-	/** Clamp the player position to screen bounds */
+	/** 将玩家位置限制在屏幕边界内 */
 	void ClampToScreenBounds();
 
-	/** Get screen bounds in world space */
+	/** 获取世界空间中的屏幕边界 */
 	void GetScreenWorldBounds(float& OutMinX, float& OutMaxX, float& OutMinY, float& OutMaxY) const;
 
-	/** Firing state */
+	/** 射击状态 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Combat")
 	bool bIsFiring = false;
 
-	/** Invincibility flag */
+	/** 无敌标志 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Combat")
 	bool bIsInvincible = false;
 
-	/** Invincibility timer */
+	/** 无敌计时器 */
 	float InvincibilityTimer = 0.0f;
 };

@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 PickupSpawnComponent Implementation
+// ThunderFighter - 雷霆战机 PickupSpawnComponent 实现
 
 #include "PickupSpawnComponent.h"
 #include "Engine/World.h"
@@ -7,7 +7,7 @@ UPickupSpawnComponent::UPickupSpawnComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// Default drop weights
+	// 默认掉落权重
 	DropWeights.Add(EPickupType::WeaponUpgrade, 35.0f);
 	DropWeights.Add(EPickupType::HealthRestore, 30.0f);
 	DropWeights.Add(EPickupType::Bomb, 15.0f);
@@ -44,7 +44,7 @@ APickupBase* UPickupSpawnComponent::SpawnPickup(FVector Location, EPickupType Ty
 
 EPickupType UPickupSpawnComponent::GetRandomPickupType()
 {
-	// Calculate total weight
+	// 计算总权重
 	float TotalWeight = 0.0f;
 	for (const auto& Pair : DropWeights)
 	{

@@ -8,7 +8,7 @@ public class ThunderFighter : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		// Add module subdirectories to include paths so cross-directory includes work
+		// 添加模块子目录到 include path，使跨目录 #include 可以正常解析
 		PublicIncludePaths.AddRange(new string[] {
 			ModuleDirectory,
 			ModuleDirectory + "/Core",
@@ -21,12 +21,12 @@ public class ThunderFighter : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-		// Uncomment if you are using Slate UI
+		// 若使用 Slate UI 则取消注释
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
-		// Uncomment if you are using online features
+		// 若使用在线功能则取消注释
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		// 要包含 OnlineSubsystemSteam 的话，将其添加到 uproject 文件的 plugins 节并将 Enabled 属性设为 true
 	}
 }

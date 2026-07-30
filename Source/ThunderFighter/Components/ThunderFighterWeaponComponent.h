@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 WeaponComponent
-// Manages shooting logic, bullet spawning, and weapon levels for the player
+// 管理玩家的射击逻辑、子弹生成和武器等级
 
 #pragma once
 
@@ -10,8 +10,7 @@
 class AProjectileBase;
 
 /**
- * Attached to the player pawn. Manages weapon level, fire rate,
- * and projectile spawning patterns.
+ * 附加到玩家 Pawn 上。管理武器等级、射速和弹幕生成模式。
  */
 UCLASS(ClassGroup=(ThunderFighter), meta=(BlueprintSpawnableComponent))
 class THUNDERFIGHTER_API UThunderFighterWeaponComponent : public UActorComponent
@@ -27,93 +26,93 @@ protected:
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/** Start continuous firing */
+	/** 开始连续射击 */
 	void StartFiring();
 
-	/** Stop continuous firing */
+	/** 停止连续射击 */
 	void StopFiring();
 
-	/** Activate bomb (screen-clearing attack) */
+	/** 激活炸弹（清屏攻击） */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Weapon")
 	void ActivateBomb();
 
-	/** Add a bomb to the player's inventory */
+	/** 向玩家库存中添加炸弹 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Weapon")
 	void AddBomb(int32 Count = 1);
 
-	/** Increase weapon level by 1 */
+	/** 武器等级提升 1 级 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Weapon")
 	void UpgradeWeapon();
 
-	/** Get current weapon level */
+	/** 获取当前武器等级 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Weapon")
 	int32 GetWeaponLevel() const { return WeaponLevel; }
 
-	/** Get current bomb count */
+	/** 获取当前炸弹数量 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Weapon")
 	int32 GetBombCount() const { return BombCount; }
 
 protected:
-	/** Spawn a projectile at the given local offset */
+	/** 在给定的局部偏移位置生成弹幕 */
 	void FireProjectile(FVector LocalOffset);
 
-	/** Fire according to current weapon level pattern */
+	/** 根据当前武器等级模式射击 */
 	void FirePattern();
 
-	// ---- Configurable Properties ----
+	// ---- 可配置属性 ----
 
-	/** Projectile class to spawn */
+	/** 要生成的弹幕类型 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
-	/** Fire rate (shots per second) at level 1 */
+	/** 1 级的基础射速（每秒射击次数） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	float BaseFireRate = 5.0f;
 
-	/** Current weapon level (1-5) */
+	/** 当前武器等级（1-5） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	int32 WeaponLevel = 1;
 
-	/** Maximum weapon level */
+	/** 最大武器等级 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	int32 MaxWeaponLevel = 5;
 
-	/** Projectile speed (units/sec) */
+	/** 弹幕速度（单位/秒） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	float ProjectileSpeed = 2000.0f;
 
-	/** Projectile damage */
+	/** 弹幕伤害 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	float ProjectileDamage = 10.0f;
 
-	/** Number of bombs available */
+	/** 可用炸弹数量 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon")
 	int32 BombCount = 3;
 
-	/** Spawn offsets for level 1 (single shot center) */
+	/** 1 级生成偏移（单发居中） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon|Patterns")
 	TArray<FVector> PatternLevel1;
 
-	/** Spawn offsets for level 2 (twin shot) */
+	/** 2 级生成偏移（双发） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon|Patterns")
 	TArray<FVector> PatternLevel2;
 
-	/** Spawn offsets for level 3 (triple shot) */
+	/** 3 级生成偏移（三连发） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon|Patterns")
 	TArray<FVector> PatternLevel3;
 
-	/** Spawn offsets for level 4 (quad shot) */
+	/** 4 级生成偏移（四连发） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon|Patterns")
 	TArray<FVector> PatternLevel4;
 
-	/** Spawn offsets for level 5 (full spread) */
+	/** 5 级生成偏移（全扩散） */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Weapon|Patterns")
 	TArray<FVector> PatternLevel5;
 
 private:
-	/** Is the weapon currently firing? */
+	/** 武器当前是否正在射击？ */
 	bool bIsFiring = false;
 
-	/** Time accumulator for fire rate */
+	/** 射速时间累计器 */
 	float FireTimer = 0.0f;
 };

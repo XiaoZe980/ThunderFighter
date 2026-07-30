@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 EnemySpawner
-// Manages enemy wave spawning in the level
+// 管理关卡中的敌人波次生成
 
 #pragma once
 
@@ -10,58 +10,58 @@
 class AEnemyBase;
 
 /**
- * Struct defining a single spawn entry in a wave.
+ * 定义波次中单个生成条目的结构体。
  */
 USTRUCT(BlueprintType)
 struct FSpawnEntry
 {
 	GENERATED_BODY()
 
-	/** Enemy class to spawn */
+	/** 要生成的敌人类型 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnEntry")
 	TSubclassOf<AEnemyBase> EnemyClass;
 
-	/** Spawn position relative to spawner */
+	/** 相对于生成器的生成位置 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnEntry")
 	FVector SpawnOffset = FVector(500.0f, 0.0f, 0.0f);
 
-	/** Delay before spawning this entry (seconds from wave start) */
+	/** 生成此条目前的延迟（从波次开始的秒数） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnEntry")
 	float SpawnDelay = 0.0f;
 
-	/** Override health (0 = use default) */
+	/** 覆盖生命值（0 = 使用默认值） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnEntry")
 	float OverrideHealth = 0.0f;
 
-	/** Override speed (0 = use default) */
+	/** 覆盖速度（0 = 使用默认值） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnEntry")
 	float OverrideSpeed = 0.0f;
 };
 
 /**
- * Struct defining a wave of enemies.
+ * 定义一波敌人的结构体。
  */
 USTRUCT(BlueprintType)
 struct FEnemyWave
 {
 	GENERATED_BODY()
 
-	/** Display name for this wave */
+	/** 此波次的显示名称 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
 	FString WaveName;
 
-	/** Delay before this wave begins (seconds) */
+	/** 此波次开始前的延迟（秒） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
 	float WaveStartDelay = 0.0f;
 
-	/** Spawn entries in this wave */
+	/** 此波次中的生成条目 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
 	TArray<FSpawnEntry> Entries;
 };
 
 /**
- * Spawner actor placed in the level. Controls enemy wave spawning.
- * Attach to GameMode or place directly in the level.
+ * 放置在关卡中的生成器 Actor。控制敌人波次生成。
+ * 可附加到 GameMode 或直接放置在关卡中。
  */
 UCLASS()
 class THUNDERFIGHTER_API AEnemySpawner : public AActor
@@ -77,73 +77,73 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	/** Start spawning waves */
+	/** 开始生成波次 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Spawner")
 	void StartSpawning();
 
-	/** Stop all spawning */
+	/** 停止所有生成 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Spawner")
 	void StopSpawning();
 
-	/** Add a wave to the spawn queue */
+	/** 向生成队列添加一个波次 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Spawner")
 	void AddWave(const FEnemyWave& Wave);
 
-	/** Clear all pending waves */
+	/** 清除所有待生成的波次 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Spawner")
 	void ClearWaves();
 
-	/** Spawn a single enemy at the given relative offset */
+	/** 在给定的相对偏移位置生成单个敌人 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Spawner")
 	AEnemyBase* SpawnEnemy(TSubclassOf<AEnemyBase> EnemyClass, FVector SpawnOffset,
 		float OverrideHealth = 0.0f, float OverrideSpeed = 0.0f);
 
-	/** Are we currently spawning? */
+	/** 当前是否正在生成？ */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Spawner")
 	bool IsSpawning() const { return bIsSpawning; }
 
 protected:
-	/** Process the current wave and spawn entries */
+	/** 处理当前波次并生成条目 */
 	void ProcessWaves(float DeltaTime);
 
-	// ---- Configuration ----
+	// ---- 配置 ----
 
-	/** Pre-defined waves to spawn in sequence */
+	/** 按顺序生成的预定义波次 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner")
 	TArray<FEnemyWave> Waves;
 
-	/** Loop waves after completing all? */
+	/** 完成所有波次后是否循环？ */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner")
 	bool bLoopWaves = false;
 
-	/** Time between wave loops (seconds) */
+	/** 波次循环之间的间隔时间（秒） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner")
 	float LoopDelay = 5.0f;
 
-	/** Spawn area half-width (Y axis) */
+	/** 生成区域半宽（Y 轴） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner")
 	float SpawnAreaWidth = 400.0f;
 
-	/** Spawn area half-height (Z axis) */
+	/** 生成区域半高（Z 轴） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner")
 	float SpawnAreaHeight = 300.0f;
 
 private:
-	/** Is the spawner active? */
+	/** 生成器是否处于激活状态？ */
 	bool bIsSpawning = false;
 
-	/** Index into Waves array */
+	/** Waves 数组的索引 */
 	int32 CurrentWaveIndex = 0;
 
-	/** Timer for current wave delay */
+	/** 当前波次延迟计时器 */
 	float WaveTimer = 0.0f;
 
-	/** Timer for spawning within the current wave */
+	/** 当前波次内的生成计时器 */
 	float WaveElapsedTime = 0.0f;
 
-	/** Track which entries in current wave have been spawned */
+	/** 记录当前波次中哪些条目已生成 */
 	TArray<bool> EntrySpawnedFlags;
 
-	/** Loop cooldown timer */
+	/** 循环冷却计时器 */
 	float LoopTimer = 0.0f;
 };

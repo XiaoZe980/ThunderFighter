@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 PlayerController
-// Handles player input via EnhancedInput system
+// 通过 EnhancedInput 系统处理玩家输入
 
 #pragma once
 
@@ -12,7 +12,7 @@ class UInputAction;
 struct FInputActionValue;
 
 /**
- * PlayerController that binds EnhancedInput actions for the ThunderFighter game.
+ * 为 ThunderFighter 游戏绑定 EnhancedInput 动作的 PlayerController。
  */
 UCLASS()
 class THUNDERFIGHTER_API AThunderFighterPlayerController : public APlayerController
@@ -27,50 +27,50 @@ protected:
 	virtual void SetupInputComponent() override;
 
 public:
-	// ---- Input Mappings ----
+	// ---- 输入映射 ----
 
-	/** Main input mapping context for gameplay */
+	/** 游戏玩法的主输入映射上下文 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Input")
 	TObjectPtr<UInputMappingContext> GameplayInputMapping;
 
-	/** Horizontal movement (left/right) */
+	/** 水平移动（左/右） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Input")
 	TObjectPtr<UInputAction> IA_MoveHorizontal;
 
-	/** Vertical movement (up/down) */
+	/** 垂直移动（上/下） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Input")
 	TObjectPtr<UInputAction> IA_MoveVertical;
 
-	/** Fire / shoot action */
+	/** 开火 / 射击动作 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Input")
 	TObjectPtr<UInputAction> IA_Fire;
 
-	/** Bomb / special weapon */
+	/** 炸弹 / 特殊武器 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Input")
 	TObjectPtr<UInputAction> IA_Bomb;
 
-	/** Pause action */
+	/** 暂停动作 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Input")
 	TObjectPtr<UInputAction> IA_Pause;
 
 protected:
-	// ---- Input Callbacks ----
+	// ---- 输入回调 ----
 
-	/** Horizontal movement input callback */
+	/** 水平移动输入回调 */
 	void OnMoveHorizontal(const FInputActionValue& Value);
 
-	/** Vertical movement input callback */
+	/** 垂直移动输入回调 */
 	void OnMoveVertical(const FInputActionValue& Value);
 
-	/** Fire started callback */
+	/** 开火开始回调 */
 	void OnFireStarted(const FInputActionValue& Value);
 
-	/** Fire stopped callback */
+	/** 开火停止回调 */
 	void OnFireStopped(const FInputActionValue& Value);
 
-	/** Bomb activation callback */
+	/** 炸弹激活回调 */
 	void OnBomb(const FInputActionValue& Value);
 
-	/** Pause callback */
+	/** 暂停回调 */
 	void OnPause(const FInputActionValue& Value);
 };

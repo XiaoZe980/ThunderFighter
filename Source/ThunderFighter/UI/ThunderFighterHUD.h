@@ -1,5 +1,5 @@
 // ThunderFighter - 雷霆战机 HUD
-// In-game heads-up display showing score, health, weapon level, bombs
+// 游戏内抬头显示，展示分数、生命值、武器等级、炸弹数量
 
 #pragma once
 
@@ -10,8 +10,8 @@
 class UUserWidget;
 
 /**
- * HUD class for ThunderFighter.
- * Manages UMG widgets for in-game UI: score, health bar, weapon level, bombs, game-over screen.
+ * ThunderFighter 的 HUD 类。
+ * 管理游戏内 UI 的 UMG 控件：分数、生命值条、武器等级、炸弹、游戏结束画面。
  */
 UCLASS()
 class THUNDERFIGHTER_API AThunderFighterHUD : public AHUD
@@ -25,50 +25,50 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	/** Show the gameplay HUD */
+	/** 显示游戏玩法 HUD */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void ShowGameplayHUD();
 
-	/** Hide the gameplay HUD */
+	/** 隐藏游戏玩法 HUD */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void HideGameplayHUD();
 
-	/** Show the game-over screen */
+	/** 显示游戏结束画面 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void ShowGameOverScreen(int32 FinalScore, int32 HighScore);
 
-	/** Show the pause menu */
+	/** 显示暂停菜单 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void ShowPauseMenu();
 
-	/** Hide the pause menu */
+	/** 隐藏暂停菜单 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void HidePauseMenu();
 
-	// ---- Blueprint Widget Classes ----
+	// ---- 蓝图控件类型 ----
 
-	/** Gameplay HUD widget class (score, health, etc.) */
+	/** 游戏玩法 HUD 控件类型（分数、生命值等） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TSubclassOf<UUserWidget> GameplayHUDClass;
 
-	/** Game-over widget class */
+	/** 游戏结束控件类型 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TSubclassOf<UUserWidget> GameOverWidgetClass;
 
-	/** Pause menu widget class */
+	/** 暂停菜单控件类型 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
 
 protected:
-	/** Currently active gameplay HUD widget instance */
+	/** 当前活跃的游戏玩法 HUD 控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TObjectPtr<UUserWidget> GameplayHUDWidget;
 
-	/** Currently active game-over widget instance */
+	/** 当前活跃的游戏结束控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TObjectPtr<UUserWidget> GameOverWidget;
 
-	/** Currently active pause menu widget instance */
+	/** 当前活跃的暂停菜单控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TObjectPtr<UUserWidget> PauseMenuWidget;
 };

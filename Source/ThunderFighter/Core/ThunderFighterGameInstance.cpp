@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 GameInstance Implementation
+// ThunderFighter - 雷霆战机 GameInstance 实现
 
 #include "ThunderFighterGameInstance.h"
 

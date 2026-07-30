@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 PlayerController Implementation
+// ThunderFighter - 雷霆战机 PlayerController 实现
 
 #include "ThunderFighterPlayerController.h"
 #include "EnhancedInputSubsystems.h"
@@ -8,7 +8,7 @@
 
 AThunderFighterPlayerController::AThunderFighterPlayerController()
 {
-	// Allow tick for input processing
+	// 允许 Tick 以处理输入
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -16,7 +16,7 @@ void AThunderFighterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Diagnostic: check if input assets are configured
+	// 诊断：检查输入资产是否已配置
 	if (!GameplayInputMapping)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[ThunderFighter] PlayerController: GameplayInputMapping is NULL! Set it in the BP class defaults."));
@@ -26,7 +26,7 @@ void AThunderFighterPlayerController::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("[ThunderFighter] PlayerController: IA_MoveHorizontal is NULL! Assign it in the BP."));
 	}
 
-	// Add the gameplay input mapping context
+	// 添加游戏输入映射上下文
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -45,7 +45,7 @@ void AThunderFighterPlayerController::SetupInputComponent()
 	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent);
 	if (!EnhancedInput) return;
 
-	// Bind movement actions
+	// 绑定移动动作
 	if (IA_MoveHorizontal)
 	{
 		EnhancedInput->BindAction(IA_MoveHorizontal, ETriggerEvent::Triggered, this,
@@ -62,7 +62,7 @@ void AThunderFighterPlayerController::SetupInputComponent()
 			&AThunderFighterPlayerController::OnMoveVertical);
 	}
 
-	// Bind fire action
+	// 绑定开火动作
 	if (IA_Fire)
 	{
 		EnhancedInput->BindAction(IA_Fire, ETriggerEvent::Started, this,
@@ -71,14 +71,14 @@ void AThunderFighterPlayerController::SetupInputComponent()
 			&AThunderFighterPlayerController::OnFireStopped);
 	}
 
-	// Bind bomb action
+	// 绑定炸弹动作
 	if (IA_Bomb)
 	{
 		EnhancedInput->BindAction(IA_Bomb, ETriggerEvent::Started, this,
 			&AThunderFighterPlayerController::OnBomb);
 	}
 
-	// Bind pause action
+	// 绑定暂停动作
 	if (IA_Pause)
 	{
 		EnhancedInput->BindAction(IA_Pause, ETriggerEvent::Started, this,
@@ -86,7 +86,7 @@ void AThunderFighterPlayerController::SetupInputComponent()
 	}
 }
 
-// -- Input Callbacks --
+// -- 输入回调 --
 
 void AThunderFighterPlayerController::OnMoveHorizontal(const FInputActionValue& Value)
 {
@@ -135,6 +135,6 @@ void AThunderFighterPlayerController::OnBomb(const FInputActionValue& Value)
 
 void AThunderFighterPlayerController::OnPause(const FInputActionValue& Value)
 {
-	// Pause logic — to be expanded with UI
+	// 暂停逻辑——后续将配合 UI 扩展
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Pause requested"));
 }

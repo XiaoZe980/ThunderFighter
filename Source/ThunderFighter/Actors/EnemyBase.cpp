@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 EnemyBase Implementation
+// ThunderFighter - 雷霆战机 EnemyBase 实现
 
 #include "EnemyBase.h"
 #include "Components/ThunderFighterHealthComponent.h"
@@ -13,24 +13,24 @@ AEnemyBase::AEnemyBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Collision
+	// 碰撞体
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetBoxExtent(FVector(30.0f, 30.0f, 5.0f));
 	CollisionBox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	SetRootComponent(CollisionBox);
 
-	// Mesh
+	// 网格体
 	EnemyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EnemyMesh"));
 	EnemyMesh->SetupAttachment(RootComponent);
 	EnemyMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	// Health
+	// 生命值
 	HealthComponent = CreateDefaultSubobject<UThunderFighterHealthComponent>(TEXT("HealthComponent"));
 
-	// Projectile pattern (optional shooting)
+	// 弹幕模式（可选射击）
 	ProjectilePattern = CreateDefaultSubobject<UProjectilePatternComponent>(TEXT("ProjectilePattern"));
 
-	// Tag this actor as enemy for projectile faction checks
+	// 将此 Actor 标记为敌方，用于弹幕阵营检查
 	Tags.Add(TEXT("Enemy"));
 }
 
@@ -46,10 +46,10 @@ void AEnemyBase::BeginPlay()
 		HealthComponent->OnHealthDepleted.AddDynamic(this, &AEnemyBase::OnEnemyDefeated);
 	}
 
-	// Set up auto-fire if this enemy can shoot
+	// 如果此敌人可以射击则设置自动开火
 	if (bCanShoot && ProjectilePattern)
 	{
-		// Auto-fire will start after FireStartDelay in Tick
+		// 自动开火将在 Tick 中于 FireStartDelay 后开始
 	}
 }
 
@@ -60,7 +60,7 @@ void AEnemyBase::Tick(float DeltaTime)
 	AliveTime += DeltaTime;
 	ApplyMovement(DeltaTime);
 
-	// Handle shooting
+	// 处理射击
 	if (bCanShoot && ProjectilePattern)
 	{
 		if (!bHasStartedShooting)
@@ -74,7 +74,7 @@ void AEnemyBase::Tick(float DeltaTime)
 		}
 	}
 
-	// Destroy if off-screen (moved too far)
+	// 移出屏幕（移动太远）时销毁
 	FVector Pos = GetActorLocation();
 	if (FMath::Abs(Pos.X) > 3000.0f || FMath::Abs(Pos.Y) > 3000.0f)
 	{
@@ -94,16 +94,16 @@ void AEnemyBase::Initialize(float InSpeed, float InHealth)
 
 void AEnemyBase::OnEnemyDefeated()
 {
-	// Award score
+	// 奖励分数
 	AThunderFighterGameMode* GM = Cast<AThunderFighterGameMode>(GetWorld()->GetAuthGameMode());
 	if (GM)
 	{
 		GM->AddScore(ScoreValue);
 	}
 
-	// Spawn pickup based on drop rate (handled by spawner or BP)
+	// 基于掉落率生成拾取道具（由生成器或蓝图处理）
 
-	// Disable collision and movement, then destroy
+	// 禁用碰撞和移动，然后销毁
 	if (CollisionBox)
 	{
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -116,7 +116,7 @@ void AEnemyBase::OnEnemyDefeated()
 
 	UE_LOG(LogTemp, Verbose, TEXT("[ThunderFighter] Enemy defeated: %s (+%d points)"), *GetName(), ScoreValue);
 
-	// TODO: Play destruction VFX / animation before destroying
+	// TODO: 销毁前播放爆炸 VFX / 动画
 	Destroy();
 }
 
@@ -126,7 +126,7 @@ void AEnemyBase::ApplyMovement(float DeltaTime)
 
 	if (MovementCurveX || MovementCurveY)
 	{
-		// Use curves for advanced movement patterns
+		// 使用曲线实现高级移动模式
 		float OffsetX = 0.0f, OffsetY = 0.0f;
 
 		if (MovementCurveX)
@@ -138,14 +138,14 @@ void AEnemyBase::ApplyMovement(float DeltaTime)
 			OffsetY = MovementCurveY->GetFloatValue(AliveTime);
 		}
 
-		// Base direction provides forward motion, curves provide lateral offsets
+		// 基础方向提供前进运动，曲线提供横向偏移
 		FVector Forward = BaseDirection * BaseSpeed * MoveSpeedMultiplier;
-		FVector Right = FVector(0.0f, 1.0f, 0.0f); // Lateral axis
+		FVector Right = FVector(0.0f, 1.0f, 0.0f); // 横向轴
 		Movement = (Forward + Right * OffsetX + FVector(0.0f, 0.0f, 1.0f) * OffsetY) * DeltaTime;
 	}
 	else
 	{
-		// Simple linear movement
+		// 简单直线移动
 		Movement = BaseDirection * BaseSpeed * MoveSpeedMultiplier * DeltaTime;
 	}
 

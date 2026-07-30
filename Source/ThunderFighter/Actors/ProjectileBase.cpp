@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 ProjectileBase Implementation
+// ThunderFighter - 雷霆战机 ProjectileBase 实现
 
 #include "ProjectileBase.h"
 #include "Components/SphereComponent.h"
@@ -10,19 +10,19 @@ AProjectileBase::AProjectileBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Collision sphere
+	// 碰撞球体
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	CollisionSphere->SetSphereRadius(10.0f);
 	CollisionSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	CollisionSphere->SetGenerateOverlapEvents(true);
 	SetRootComponent(CollisionSphere);
 
-	// Visual mesh
+	// 视觉网格体
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
 	ProjectileMesh->SetupAttachment(RootComponent);
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	// Projectile movement
+	// 弹幕移动组件
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->InitialSpeed = Speed;
 	MovementComponent->MaxSpeed = Speed;
@@ -44,7 +44,7 @@ void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Lifetime check
+	// 生命周期检查
 	if (MaxLifetime > 0.0f)
 	{
 		LifetimeTimer += DeltaTime;
@@ -81,12 +81,12 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 {
 	if (!OtherActor || OtherActor == GetOwner()) return;
 
-	// Check faction tag on the other actor
+	// 检查另一个 Actor 的阵营标签
 	bool bIsEnemy = OtherActor->ActorHasTag(Faction == EProjectileFaction::Player ? TEXT("Enemy") : TEXT("Player"));
 
 	if (bIsEnemy)
 	{
-		// Apply damage if the other actor has a health component
+		// 如果另一个 Actor 有生命值组件则对其造成伤害
 		UThunderFighterHealthComponent* HealthComp = OtherActor->FindComponentByClass<UThunderFighterHealthComponent>();
 		if (HealthComp)
 		{
@@ -99,6 +99,6 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 void AProjectileBase::DeactivateProjectile()
 {
-	// For now: simply destroy. Object pooling can be added later.
+	// 目前：直接销毁。后续可添加对象池。
 	Destroy();
 }

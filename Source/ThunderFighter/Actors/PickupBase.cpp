@@ -1,4 +1,4 @@
-// ThunderFighter - 雷霆战机 PickupBase Implementation
+// ThunderFighter - 雷霆战机 PickupBase 实现
 
 #include "PickupBase.h"
 #include "Actors/ThunderFighterPlayerPawn.h"
@@ -15,14 +15,14 @@ APickupBase::APickupBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Trigger sphere
+	// 触发球体
 	TriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerSphere"));
 	TriggerSphere->SetSphereRadius(40.0f);
 	TriggerSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	TriggerSphere->SetGenerateOverlapEvents(true);
 	SetRootComponent(TriggerSphere);
 
-	// Visual mesh
+	// 视觉网格体
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
 	PickupMesh->SetupAttachment(RootComponent);
 	PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -42,17 +42,17 @@ void APickupBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Float animation (bobbing)
+	// 浮动动画（上下抖动）
 	LifetimeTimer += DeltaTime;
 	FVector Pos = GetActorLocation();
 	Pos.Z = InitialZ + FMath::Sin(LifetimeTimer * FloatSpeed) * FloatAmplitude;
 
-	// Drift downward (in X for our game orientation)
+	// 向下漂移（在游戏坐标系中为 X 方向）
 	Pos.X -= DriftSpeed * DeltaTime;
 
 	SetActorLocation(Pos);
 
-	// Auto-destroy after lifetime
+	// 生命周期结束后自动销毁
 	if (LifetimeTimer >= Lifetime)
 	{
 		Destroy();
@@ -70,7 +70,7 @@ void APickupBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 {
 	if (!OtherActor) return;
 
-	// Only player can collect pickups
+	// 只有玩家可以收集拾取道具
 	if (OtherActor->ActorHasTag(TEXT("Player")) || OtherActor->IsA<AThunderFighterPlayerPawn>())
 	{
 		ApplyEffect(OtherActor);
