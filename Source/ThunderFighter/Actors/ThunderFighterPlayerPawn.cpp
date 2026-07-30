@@ -58,6 +58,12 @@ void AThunderFighterPlayerPawn::BeginPlay()
 	{
 		HealthComponent->OnHealthDepleted.AddDynamic(this, &AThunderFighterPlayerPawn::OnHealthDepleted);
 	}
+
+	// Auto-fire: player shoots automatically, no need to hold a button
+	if (bAutoFireEnabled)
+	{
+		StartFiring();
+	}
 }
 
 void AThunderFighterPlayerPawn::Tick(float DeltaTime)

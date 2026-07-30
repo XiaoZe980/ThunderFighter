@@ -88,6 +88,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Combat")
 	bool IsFiring() const { return bIsFiring; }
 
+	/** If true, the player fires automatically (default for STG games) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Combat")
+	bool bAutoFireEnabled = true;
+
 	// ---- Invincibility ----
 
 	/** Grant temporary invincibility (e.g. after taking damage) */
