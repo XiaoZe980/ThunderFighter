@@ -9,6 +9,8 @@
 
 class UThunderFighterHealthComponent;
 class UThunderFighterWeaponComponent;
+class USpringArmComponent;
+class UCameraComponent;
 class UBoxComponent;
 
 /**
@@ -45,6 +47,14 @@ protected:
 	/** Weapon component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UThunderFighterWeaponComponent> WeaponComponent;
+
+	/** Spring arm for top-down camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")
+	TObjectPtr<USpringArmComponent> CameraSpringArm;
+
+	/** Top-down camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")
+	TObjectPtr<UCameraComponent> FollowCamera;
 
 public:
 	// ---- Movement ----

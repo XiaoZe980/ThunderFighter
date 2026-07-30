@@ -6,6 +6,8 @@
 #include "Core/ThunderFighterGameMode.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/Engine.h"
 
@@ -29,6 +31,22 @@ AThunderFighterPlayerPawn::AThunderFighterPlayerPawn()
 
 	// Weapon component
 	WeaponComponent = CreateDefaultSubobject<UThunderFighterWeaponComponent>(TEXT("WeaponComponent"));
+
+	// Spring arm — holds camera above the player, looking down
+	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
+	CameraSpringArm->SetupAttachment(RootComponent);
+	CameraSpringArm->TargetArmLength = 3000.0f;                       // Height above the battlefield
+	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f)); // Pitch down for top-down view
+	CameraSpringArm->bDoCollisionTest = false;                        // Don't clip against geometry
+	CameraSpringArm->bInheritPitch = false;
+	CameraSpringArm->bInheritYaw = false;
+	CameraSpringArm->bInheritRoll = false;
+
+	// Top-down camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
+	FollowCamera->SetProjectionMode(ECameraProjectionMode::Perspective);
+	FollowCamera->SetFieldOfView(60.0f);
 }
 
 void AThunderFighterPlayerPawn::BeginPlay()
