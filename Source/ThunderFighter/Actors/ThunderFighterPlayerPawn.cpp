@@ -165,10 +165,10 @@ void AThunderFighterPlayerPawn::GetScreenWorldBounds(float& OutMinX, float& OutM
 	FVector2D BottomLeft  = DeprojectToPlane(MarginX, ViewportY - MarginY);
 	FVector2D BottomRight = DeprojectToPlane(ViewportX - MarginX, ViewportY - MarginY);
 
-	OutMinX = FMath::Min({TopLeft.X, TopRight.X, BottomLeft.X, BottomRight.X});
-	OutMaxX = FMath::Max({TopLeft.X, TopRight.X, BottomLeft.X, BottomRight.X});
-	OutMinY = FMath::Min({TopLeft.Y, TopRight.Y, BottomLeft.Y, BottomRight.Y});
-	OutMaxY = FMath::Max({TopLeft.Y, TopRight.Y, BottomLeft.Y, BottomRight.Y});
+	OutMinX = FMath::Min(FMath::Min(TopLeft.X, TopRight.X), FMath::Min(BottomLeft.X, BottomRight.X));
+	OutMaxX = FMath::Max(FMath::Max(TopLeft.X, TopRight.X), FMath::Max(BottomLeft.X, BottomRight.X));
+	OutMinY = FMath::Min(FMath::Min(TopLeft.Y, TopRight.Y), FMath::Min(BottomLeft.Y, BottomRight.Y));
+	OutMaxY = FMath::Max(FMath::Max(TopLeft.Y, TopRight.Y), FMath::Max(BottomLeft.Y, BottomRight.Y));
 }
 
 // Health depleted callback — to be wired up in BeginPlay
