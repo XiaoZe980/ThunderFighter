@@ -143,22 +143,32 @@ void AThunderFighterPlayerPawn::GetScreenWorldBounds(float& OutMinX, float& OutM
 	int32 ViewportX, ViewportY;
 	PC->GetViewportSize(ViewportX, ViewportY);
 
-	FVector WorldOrigin, WorldDirection;
-	// Deproject screen edge to world
-	PC->DeprojectScreenPositionToWorld(0.0f, 0.0f, WorldOrigin, WorldDirection);
-	// Approximate world bounds at the player's Z level
-	float Z = GetActorLocation().Z;
+	// Apply margin as a fraction of viewport edges
+	const float MarginX = ViewportX * ScreenBoundaryMargin;
+	const float MarginY = ViewportY * ScreenBoundaryMargin;
 
-	// Simplified: use a percentage-based approach
-	const float HalfWidth = ViewportX * 0.5f * (1.0f - ScreenBoundaryMargin);
-	const float HalfHeight = ViewportY * 0.5f * (1.0f - ScreenBoundaryMargin);
+	// Deproject 4 corners of the screen (with margin) to find where they hit the player's Z plane
+	auto DeprojectToPlane = [&](float ScreenX, float ScreenY) -> FVector2D
+	{
+		FVector Origin, Direction;
+		PC->DeprojectScreenPositionToWorld(ScreenX, ScreenY, Origin, Direction);
 
-	// Convert screen units to world units using a rough scaling factor
-	const float WorldScale = 0.05f; // tune this per-project
-	OutMinX = -HalfWidth * WorldScale;
-	OutMaxX = HalfWidth * WorldScale;
-	OutMinY = -HalfHeight * WorldScale;
-	OutMaxY = HalfHeight * WorldScale;
+		// Intersect ray with the horizontal plane at the player's Z
+		float PlayerZ = GetActorLocation().Z;
+		float T = (PlayerZ - Origin.Z) / Direction.Z;
+		FVector HitPoint = Origin + Direction * T;
+		return FVector2D(HitPoint.X, HitPoint.Y);
+	};
+
+	FVector2D TopLeft     = DeprojectToPlane(MarginX, MarginY);
+	FVector2D TopRight    = DeprojectToPlane(ViewportX - MarginX, MarginY);
+	FVector2D BottomLeft  = DeprojectToPlane(MarginX, ViewportY - MarginY);
+	FVector2D BottomRight = DeprojectToPlane(ViewportX - MarginX, ViewportY - MarginY);
+
+	OutMinX = FMath::Min({TopLeft.X, TopRight.X, BottomLeft.X, BottomRight.X});
+	OutMaxX = FMath::Max({TopLeft.X, TopRight.X, BottomLeft.X, BottomRight.X});
+	OutMinY = FMath::Min({TopLeft.Y, TopRight.Y, BottomLeft.Y, BottomRight.Y});
+	OutMaxY = FMath::Max({TopLeft.Y, TopRight.Y, BottomLeft.Y, BottomRight.Y});
 }
 
 // Health depleted callback — to be wired up in BeginPlay
