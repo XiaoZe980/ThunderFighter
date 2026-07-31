@@ -41,6 +41,10 @@ void AEnemyBase::BeginPlay()
 	AliveTime = 0.0f;
 	FireTimer = FireStartDelay;
 
+	FVector Pos = GetActorLocation();
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 敌人生成: %s 位置=(%.0f, %.0f, %.0f)"),
+		*GetName(), Pos.X, Pos.Y, Pos.Z);
+
 	if (HealthComponent)
 	{
 		HealthComponent->OnHealthDepleted.AddDynamic(this, &AEnemyBase::OnEnemyDefeated);
