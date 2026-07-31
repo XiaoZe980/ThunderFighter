@@ -59,13 +59,21 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	/** 弹幕命中物体时调用 */
+	/** 弹幕命中物体时调用（碰撞检测，用于有碰撞响应的场景） */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	/** 弹幕与物体重叠时调用（Overlap 模式，用于子弹与敌人的穿透检测） */
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	/** 停用此弹幕并返回对象池（或销毁） */
 	void DeactivateProjectile();
+
+	/** 处理命中/重叠事件的公共逻辑 */
+	void HandleHit(AActor* OtherActor);
 
 	// ---- 组件 ----
 

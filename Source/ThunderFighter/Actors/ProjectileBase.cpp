@@ -36,6 +36,7 @@ void AProjectileBase::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionSphere->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
+	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::OnOverlap);
 
 	LifetimeTimer = 0.0f;
 }
@@ -79,13 +80,18 @@ void AProjectileBase::SetLifetime(float InLifetime)
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!OtherActor || OtherActor == GetOwner()) return;
+	HandleHit(OtherActor);
+}
 
-	// 打印所有碰撞到的对象，方便调试
-	FString TargetTags;
-	for (const FName& Tag : OtherActor->Tags) { TargetTags += Tag.ToString() + TEXT(" "); }
-	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 碰到 %s (Tag: %s)"),
-		*GetName(), *OtherActor->GetName(), *TargetTags);
+void AProjectileBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	HandleHit(OtherActor);
+}
+
+void AProjectileBase::HandleHit(AActor* OtherActor)
+{
+	if (!OtherActor || OtherActor == GetOwner()) return;
 
 	// 检查另一个 Actor 的阵营标签
 	FName RequiredTag = Faction == EProjectileFaction::Player ? TEXT("Enemy") : TEXT("Player");
