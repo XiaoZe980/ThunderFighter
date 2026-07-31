@@ -81,12 +81,19 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 {
 	if (!OtherActor || OtherActor == GetOwner()) return;
 
+	// 打印所有碰撞到的对象，方便调试
+	FString TargetTags;
+	for (const FName& Tag : OtherActor->Tags) { TargetTags += Tag.ToString() + TEXT(" "); }
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 碰到 %s (Tag: %s)"),
+		*GetName(), *OtherActor->GetName(), *TargetTags);
+
 	// 检查另一个 Actor 的阵营标签
-	bool bIsEnemy = OtherActor->ActorHasTag(Faction == EProjectileFaction::Player ? TEXT("Enemy") : TEXT("Player"));
+	FName RequiredTag = Faction == EProjectileFaction::Player ? TEXT("Enemy") : TEXT("Player");
+	bool bIsEnemy = OtherActor->ActorHasTag(RequiredTag);
 
 	if (bIsEnemy)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 命中 %s (伤害: %.1f)"),
+		UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 命中敌对阵营 %s (伤害: %.1f)"),
 			*GetName(), *OtherActor->GetName(), Damage);
 
 		// 如果另一个 Actor 有生命值组件则对其造成伤害

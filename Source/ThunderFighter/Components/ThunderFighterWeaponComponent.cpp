@@ -9,7 +9,7 @@ UThunderFighterWeaponComponent::UThunderFighterWeaponComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// 各武器等级的默认射击模式
-	// 1 级：单发居中
+	// 生成位置 = 玩家位置 + 前方100单位，发射方向 = 玩家朝向
 	PatternLevel1.Add(FVector(100.0f, 0.0f, 0.0f));
 
 	// 2 级：双发
@@ -113,11 +113,16 @@ void UThunderFighterWeaponComponent::FirePattern()
 
 void UThunderFighterWeaponComponent::FireProjectile(FVector LocalOffset)
 {
-	if (!ProjectileClass) return;
+	if (!ProjectileClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ThunderFighter] 武器组件 ProjectileClass 未设置，无法生成子弹！"));
+		return;
+	}
 
 	AActor* Owner = GetOwner();
 	if (!Owner) return;
 
+	// 生成位置 = 玩家位置 + 偏移，子弹朝向 = 玩家朝向（跟随玩家移动方向）
 	FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorRotation().RotateVector(LocalOffset);
 	FRotator SpawnRotation = Owner->GetActorRotation();
 
@@ -131,5 +136,7 @@ void UThunderFighterWeaponComponent::FireProjectile(FVector LocalOffset)
 	if (Projectile)
 	{
 		Projectile->Initialize(ProjectileSpeed, ProjectileDamage, EProjectileFaction::Player);
+		UE_LOG(LogTemp, Verbose, TEXT("[ThunderFighter] 生成子弹: 位置=(%.0f, %.0f, %.0f) 朝向=%s"),
+			SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z, *SpawnRotation.ToString());
 	}
 }
