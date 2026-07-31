@@ -86,6 +86,9 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 	if (bIsEnemy)
 	{
+		UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 命中 %s (伤害: %.1f)"),
+			*GetName(), *OtherActor->GetName(), Damage);
+
 		// 如果另一个 Actor 有生命值组件则对其造成伤害
 		UThunderFighterHealthComponent* HealthComp = OtherActor->FindComponentByClass<UThunderFighterHealthComponent>();
 		if (HealthComp)

@@ -24,12 +24,13 @@ void UThunderFighterHealthComponent::TakeDamage(float DamageAmount)
 	OnHealthChanged.Broadcast(CurrentHealth);
 	OnDamageTaken.Broadcast(DamageAmount);
 
-	UE_LOG(LogTemp, Verbose, TEXT("[ThunderFighter] %s took %.1f damage. Health: %.1f/%.1f"),
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 受到 %.1f 点伤害，剩余血量: %.1f/%.1f"),
 		*GetOwner()->GetName(), DamageAmount, CurrentHealth, MaxHealth);
 
 	if (CurrentHealth <= 0.0f && !bIsDead)
 	{
 		bIsDead = true;
+		UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 被摧毁!"), *GetOwner()->GetName());
 		OnHealthDepleted.Broadcast();
 	}
 }
