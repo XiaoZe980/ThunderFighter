@@ -129,9 +129,9 @@ void UThunderFighterWeaponComponent::FireProjectile(FVector LocalOffset)
 	AActor* Owner = GetOwner();
 	if (!Owner) return;
 
-	// 生成位置 = 玩家位置 + 偏移，子弹朝向 = 玩家朝向（跟随玩家移动方向）
+	// 生成位置 = 玩家位置 + 偏移，子弹朝向 = 固定朝屏幕上方（+X 轴），不随玩家转向
 	FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorRotation().RotateVector(LocalOffset);
-	FRotator SpawnRotation = Owner->GetActorRotation();
+	FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f); // 固定朝 +X 方向（屏幕上方）
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Owner;
