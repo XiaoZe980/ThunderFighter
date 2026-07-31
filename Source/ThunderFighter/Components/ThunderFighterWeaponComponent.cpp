@@ -49,13 +49,6 @@ void UThunderFighterWeaponComponent::TickComponent(float DeltaTime, ELevelTick T
 	FireTimer -= DeltaTime;
 	if (FireTimer <= 0.0f)
 	{
-		// 打印玩家位置用于调试碰撞问题
-		if (AActor* Owner = GetOwner())
-		{
-			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 玩家位置: (%.0f, %.0f, %.0f)"),
-				Owner->GetActorLocation().X, Owner->GetActorLocation().Y, Owner->GetActorLocation().Z);
-		}
-
 		FirePattern();
 		FireTimer = 1.0f / BaseFireRate;
 	}
