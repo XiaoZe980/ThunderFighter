@@ -100,9 +100,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float FireStartDelay = 1.0f;
 
-	/** 道具掉落率（0.0 - 1.0） */
+	/** 道具掉落率（-1 = 使用 PickupSpawn 组件的默认值，0.0-1.0 = 覆盖） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
-	float DropRate = 0.3f;
+	float DropRate = -1.0f;
 
 	/** 碰到玩家时对玩家造成的伤害 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
