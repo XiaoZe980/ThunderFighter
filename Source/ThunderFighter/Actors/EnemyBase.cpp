@@ -3,6 +3,7 @@
 #include "EnemyBase.h"
 #include "Components/ThunderFighterHealthComponent.h"
 #include "Components/ProjectilePatternComponent.h"
+#include "Components/PickupSpawnComponent.h"
 #include "Core/ThunderFighterGameMode.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -29,6 +30,9 @@ AEnemyBase::AEnemyBase()
 
 	// 弹幕模式（可选射击）
 	ProjectilePattern = CreateDefaultSubobject<UProjectilePatternComponent>(TEXT("ProjectilePattern"));
+
+	// 道具掉落
+	PickupSpawn = CreateDefaultSubobject<UPickupSpawnComponent>(TEXT("PickupSpawn"));
 
 	// 将此 Actor 标记为敌方，用于弹幕阵营检查
 	Tags.Add(TEXT("Enemy"));
@@ -105,7 +109,11 @@ void AEnemyBase::OnEnemyDefeated()
 		GM->AddScore(ScoreValue);
 	}
 
-	// 基于掉落率生成拾取道具（由生成器或蓝图处理）
+	// 按照 DropRate 概率掉落道具
+	if (PickupSpawn)
+	{
+		PickupSpawn->TrySpawnPickup(GetActorLocation(), DropRate);
+	}
 
 	// 禁用碰撞和移动，然后销毁
 	if (CollisionBox)

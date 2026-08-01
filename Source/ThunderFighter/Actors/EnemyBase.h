@@ -9,6 +9,7 @@
 
 class UThunderFighterHealthComponent;
 class UProjectilePatternComponent;
+class UPickupSpawnComponent;
 class UStaticMeshComponent;
 class UBoxComponent;
 class UCurveFloat;
@@ -48,6 +49,10 @@ protected:
 	/** 弹幕模式组件（可选，用于会射击的敌人） */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UProjectilePatternComponent> ProjectilePattern;
+
+	/** 道具掉落组件 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
+	TObjectPtr<UPickupSpawnComponent> PickupSpawn;
 
 public:
 	// ---- 移动 ----
