@@ -39,9 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Pickup")
 	float BaseDropRate = 0.3f;
 
-	/** 要生成的拾取道具类型 */
+	/** 每种道具类型对应的蓝图类（Key=类型, Value=蓝图） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Pickup")
-	TSubclassOf<APickupBase> PickupClass;
+	TMap<EPickupType, TSubclassOf<APickupBase>> PickupClassMap;
 
 	/** 每种拾取道具类型的概率权重 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Pickup")

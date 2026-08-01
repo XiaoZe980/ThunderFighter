@@ -26,13 +26,19 @@ void UPickupSpawnComponent::TrySpawnPickup(FVector Location, float DropRateOverr
 
 APickupBase* UPickupSpawnComponent::SpawnPickup(FVector Location, EPickupType Type, float Value)
 {
-	if (!PickupClass || !GetWorld()) return nullptr;
+	// 从类型映射表中查找对应的蓝图类
+	TSubclassOf<APickupBase>* FoundClass = PickupClassMap.Find(Type);
+	if (!FoundClass || !*FoundClass || !GetWorld())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ThunderFighter] PickupSpawn: No class mapped for type %d"), (int32)Type);
+		return nullptr;
+	}
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	APickupBase* Pickup = GetWorld()->SpawnActor<APickupBase>(
-		PickupClass, Location, FRotator::ZeroRotator, SpawnParams);
+		*FoundClass, Location, FRotator::ZeroRotator, SpawnParams);
 
 	if (Pickup)
 	{
