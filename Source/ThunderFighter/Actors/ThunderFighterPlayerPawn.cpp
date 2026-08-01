@@ -17,9 +17,13 @@ AThunderFighterPlayerPawn::AThunderFighterPlayerPawn()
 
 	// 根碰撞盒
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
-	CollisionBox->SetBoxExtent(FVector(20.0f, 20.0f, 5.0f));
-	CollisionBox->SetCollisionProfileName(TEXT("Pawn"));
+	CollisionBox->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
+	CollisionBox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	CollisionBox->SetGenerateOverlapEvents(true);
 	SetRootComponent(CollisionBox);
+
+	// 玩家 Tag，用于敌方子弹识别阵营
+	Tags.Add(TEXT("Player"));
 
 	// 战机网格体
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
@@ -58,6 +62,9 @@ void AThunderFighterPlayerPawn::BeginPlay()
 	{
 		HealthComponent->OnHealthDepleted.AddDynamic(this, &AThunderFighterPlayerPawn::OnHealthDepleted);
 	}
+
+	// 绑定重叠事件：敌人或敌方子弹碰到玩家时造成伤害
+	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AThunderFighterPlayerPawn::OnOverlap);
 
 	// 自动射击：玩家自动开火，无需按住按钮
 	if (bAutoFireEnabled)
@@ -123,6 +130,27 @@ void AThunderFighterPlayerPawn::GrantInvincibility(float Duration)
 {
 	bIsInvincible = true;
 	InvincibilityTimer = Duration;
+}
+
+void AThunderFighterPlayerPawn::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 无敌状态下不受伤
+	if (bIsInvincible) return;
+	if (!OtherActor || OtherActor == this) return;
+
+	// 检查是否是敌方阵营（敌人或敌方子弹）
+	if (OtherActor->ActorHasTag(TEXT("Enemy")))
+	{
+		if (HealthComponent)
+		{
+			HealthComponent->TakeDamage(20.0f);
+			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 玩家受到碰撞伤害!"));
+		}
+
+		// 受伤后短暂无敌
+		GrantInvincibility(1.0f);
+	}
 }
 
 void AThunderFighterPlayerPawn::ClampToScreenBounds()

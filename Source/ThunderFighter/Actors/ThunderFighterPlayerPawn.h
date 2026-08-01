@@ -107,6 +107,11 @@ protected:
 	UFUNCTION()
 	void OnHealthDepleted();
 
+	/** 被敌人或敌方子弹碰撞时调用 */
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	/** 将玩家位置限制在屏幕边界内 */
 	void ClampToScreenBounds();
 
