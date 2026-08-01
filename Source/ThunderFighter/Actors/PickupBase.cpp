@@ -17,7 +17,7 @@ APickupBase::APickupBase()
 
 	// 触发球体
 	TriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerSphere"));
-	TriggerSphere->SetSphereRadius(40.0f);
+	TriggerSphere->SetSphereRadius(200.0f); // 大半径跨越 Z 轴高度差
 	TriggerSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	TriggerSphere->SetGenerateOverlapEvents(true);
 	SetRootComponent(TriggerSphere);
@@ -36,6 +36,9 @@ void APickupBase::BeginPlay()
 
 	InitialZ = GetActorLocation().Z;
 	LifetimeTimer = 0.0f;
+
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Pickup spawned: %s at (%.0f, %.0f, %.0f)"),
+		*GetName(), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
 }
 
 void APickupBase::Tick(float DeltaTime)
@@ -70,9 +73,12 @@ void APickupBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 {
 	if (!OtherActor) return;
 
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Pickup %s overlapped with %s"), *GetName(), *OtherActor->GetName());
+
 	// 只有玩家可以收集拾取道具
 	if (OtherActor->ActorHasTag(TEXT("Player")) || OtherActor->IsA<AThunderFighterPlayerPawn>())
 	{
+		UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player collected pickup %s!"), *GetName());
 		ApplyEffect(OtherActor);
 		Destroy();
 	}
