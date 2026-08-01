@@ -20,7 +20,8 @@ void UProjectilePatternComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	if (AutoFireTimer <= 0.0f)
 	{
 		AutoFireTimer = AutoFireInterval;
-		FireSingle(FVector(1.0f, 0.0f, 0.0f), 800.0f, 10.0f);
+		// 自动射击朝玩家方向发射
+		FireAtPlayer(AutoFireSpeed, AutoFireDamage);
 	}
 }
 
