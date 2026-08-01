@@ -92,6 +92,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	bool bAutoFireEnabled = true;
 
+	/** 与敌人碰撞时受到的伤害 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Combat")
+	float CollisionDamage = 20.0f;
+
 	// ---- 无敌 ----
 
 	/** 授予临时无敌状态（例如受到伤害后） */

@@ -144,8 +144,8 @@ void AThunderFighterPlayerPawn::OnOverlap(UPrimitiveComponent* OverlappedCompone
 	{
 		if (HealthComponent)
 		{
-			HealthComponent->TakeDamage(20.0f);
-			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 玩家与 %s 碰撞!", *OtherActor->GetName()));
+			HealthComponent->TakeDamage(CollisionDamage);
+			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player collided with %s"), *OtherActor->GetName());
 		}
 
 		// 敌人碰撞玩家后自毁（和子弹命中一样）

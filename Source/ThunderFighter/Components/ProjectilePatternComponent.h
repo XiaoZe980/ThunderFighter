@@ -66,6 +66,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Projectile")
 	float BaseInaccuracy = 0.0f;
 
+	/** 自动射击子弹速度 */
+	UPROPERTY(EditAnywhere, Category = "ThunderFighter|Projectile|AutoFire")
+	float AutoFireSpeed = 800.0f;
+
+	/** 自动射击子弹伤害 */
+	UPROPERTY(EditAnywhere, Category = "ThunderFighter|Projectile|AutoFire")
+	float AutoFireDamage = 10.0f;
+
 private:
 	/** 自动射击状态 */
 	bool bAutoFire = false;
@@ -75,10 +83,4 @@ private:
 
 	/** 自动射击计时器 */
 	float AutoFireTimer = 0.0f;
-
-	/** 自动射击子弹速度 */
-	float AutoFireSpeed = 800.0f;
-
-	/** 自动射击子弹伤害 */
-	float AutoFireDamage = 10.0f;
 };
