@@ -99,6 +99,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float DropRate = 0.3f;
 
+	/** 碰到玩家时对玩家造成的伤害 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
+	float CollisionDamage = 20.0f;
+
 	// ---- 函数 ----
 
 	/** 使用指定速度覆盖来初始化敌人 */

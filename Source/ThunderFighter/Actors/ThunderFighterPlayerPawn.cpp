@@ -1,6 +1,7 @@
 // ThunderFighter - 雷霆战机 PlayerPawn 实现
 
 #include "ThunderFighterPlayerPawn.h"
+#include "EnemyBase.h"
 #include "Components/ThunderFighterHealthComponent.h"
 #include "Components/ThunderFighterWeaponComponent.h"
 #include "Core/ThunderFighterGameMode.h"
@@ -144,8 +145,15 @@ void AThunderFighterPlayerPawn::OnOverlap(UPrimitiveComponent* OverlappedCompone
 	{
 		if (HealthComponent)
 		{
-			HealthComponent->TakeDamage(CollisionDamage);
-			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player collided with %s"), *OtherActor->GetName());
+			// 从敌人身上读取碰撞伤害（不同敌人不同伤害值）
+			float Damage = CollisionDamage; // 默认值
+			if (AEnemyBase* Enemy = Cast<AEnemyBase>(OtherActor))
+			{
+				Damage = Enemy->CollisionDamage;
+			}
+
+			HealthComponent->TakeDamage(Damage);
+			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player collided with %s (%.0f damage)"), *OtherActor->GetName(), Damage);
 		}
 
 		// 敌人碰撞玩家后自毁（和子弹命中一样）
