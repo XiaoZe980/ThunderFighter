@@ -59,6 +59,11 @@ void AThunderFighterPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 统一游戏平面：玩家强制落在 Z=0，保证子弹/敌人/道具在同一高度能互相命中
+	FVector Pos = GetActorLocation();
+	Pos.Z = 0.0f;
+	SetActorLocation(Pos);
+
 	// 绑定生命值耗尽事件
 	if (HealthComponent)
 	{
