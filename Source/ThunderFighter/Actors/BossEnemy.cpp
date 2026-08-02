@@ -53,6 +53,13 @@ void ABossEnemy::BeginPlay()
 	// 记录扫射基准位置
 	HoverYOrigin = GetActorLocation().Y;
 
+	// 诊断：确认 Boss 生成位置与 Tag（用于排查打不到的问题）
+	FString TagList;
+	for (const FName& T : Tags) { TagList += T.ToString() + TEXT(","); }
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Boss %s spawned at (%.0f, %.0f, %.0f) tags=[%s] maxHP=%.0f"),
+		*GetName(), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z,
+		*TagList, HealthComponent ? HealthComponent->GetMaxHealth() : 0.0f);
+
 	// 绑定血量变化以触发阶段切换
 	if (HealthComponent)
 	{

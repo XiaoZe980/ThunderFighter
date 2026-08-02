@@ -72,9 +72,8 @@ AEnemyBase* AEnemySpawner::SpawnEnemy(TSubclassOf<AEnemyBase> EnemyClass, FVecto
 
 	if (Enemy)
 	{
-		float Health = OverrideHealth > 0.0f ? OverrideHealth : 0.0f;
-		float Speed = OverrideSpeed > 0.0f ? OverrideSpeed : 0.0f;
-		Enemy->Initialize(Speed > 0.0f ? Speed : 300.0f, Health > 0.0f ? Health : 50.0f);
+		// 只覆盖显式指定的值；Override 为 0 时保留敌人蓝图里配置的默认值
+		Enemy->Initialize(OverrideSpeed, OverrideHealth);
 	}
 
 	return Enemy;

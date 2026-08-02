@@ -92,9 +92,13 @@ void AEnemyBase::Tick(float DeltaTime)
 
 void AEnemyBase::Initialize(float InSpeed, float InHealth)
 {
-	BaseSpeed = InSpeed;
+	// 只覆盖显式传入的值；<=0 表示使用蓝图配置的默认值
+	if (InSpeed > 0.0f)
+	{
+		BaseSpeed = InSpeed;
+	}
 
-	if (HealthComponent)
+	if (InHealth > 0.0f && HealthComponent)
 	{
 		HealthComponent->SetMaxHealth(InHealth, true);
 	}
