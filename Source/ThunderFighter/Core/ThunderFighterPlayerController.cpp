@@ -93,8 +93,8 @@ void AThunderFighterPlayerController::OnMoveHorizontal(const FInputActionValue& 
 	AThunderFighterPlayerPawn* PlayerPawn = Cast<AThunderFighterPlayerPawn>(GetPawn());
 	if (PlayerPawn)
 	{
-		// 横屏布局：左右键 = 前后移动（世界 X），相机跟随
-		PlayerPawn->AddMovementInput(FVector(Value.Get<float>(), 0.0f, 0.0f));
+		// A/D（左右）= 横向移动（世界 Y），相机不跟随
+		PlayerPawn->AddMovementInput(FVector(0.0f, Value.Get<float>(), 0.0f));
 	}
 }
 
@@ -103,8 +103,8 @@ void AThunderFighterPlayerController::OnMoveVertical(const FInputActionValue& Va
 	AThunderFighterPlayerPawn* PlayerPawn = Cast<AThunderFighterPlayerPawn>(GetPawn());
 	if (PlayerPawn)
 	{
-		// 横屏布局：上下键 = 横向移动（世界 Y），相机不跟随
-		PlayerPawn->AddMovementInput(FVector(0.0f, Value.Get<float>(), 0.0f));
+		// W/S（上下）= 前后移动（世界 X），相机跟随
+		PlayerPawn->AddMovementInput(FVector(Value.Get<float>(), 0.0f, 0.0f));
 	}
 }
 

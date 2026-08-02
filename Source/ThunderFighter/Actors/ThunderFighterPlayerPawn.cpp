@@ -44,11 +44,11 @@ AThunderFighterPlayerPawn::AThunderFighterPlayerPawn()
 	CameraRig->SetupAttachment(RootComponent);
 	CameraRig->SetRelativeLocation(FVector::ZeroVector);
 
-	// 弹簧臂——将摄像机悬停在玩家上方，俯视视角（Yaw=90 实现横屏）
+	// 弹簧臂——将摄像机悬停在玩家上方，俯视视角（保持竖版朝向，横屏由视口宽高比实现）
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(CameraRig);
 	CameraSpringArm->TargetArmLength = 3000.0f;                        // 战场上方高度
-	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 90.0f, 0.0f)); // 俯视 + 横屏朝向
+	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f)); // 向下倾斜俯视
 	CameraSpringArm->bDoCollisionTest = false;                         // 不与几何体碰撞
 	CameraSpringArm->bInheritPitch = false;
 	CameraSpringArm->bInheritYaw = false;
