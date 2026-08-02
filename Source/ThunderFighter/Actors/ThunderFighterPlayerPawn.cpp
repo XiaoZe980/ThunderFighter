@@ -2,6 +2,7 @@
 
 #include "ThunderFighterPlayerPawn.h"
 #include "EnemyBase.h"
+#include "BossEnemy.h"
 #include "Components/ThunderFighterHealthComponent.h"
 #include "Components/ThunderFighterWeaponComponent.h"
 #include "Core/ThunderFighterGameMode.h"
@@ -156,8 +157,11 @@ void AThunderFighterPlayerPawn::OnOverlap(UPrimitiveComponent* OverlappedCompone
 			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player collided with %s (%.0f damage)"), *OtherActor->GetName(), Damage);
 		}
 
-		// 敌人碰撞玩家后自毁（和子弹命中一样）
-		OtherActor->Destroy();
+		// 普通敌人碰撞玩家后自毁（和子弹命中一样）；Boss 不销毁
+		if (!OtherActor->IsA<ABossEnemy>())
+		{
+			OtherActor->Destroy();
+		}
 
 		// 受伤后短暂无敌
 		GrantInvincibility(1.0f);

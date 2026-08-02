@@ -123,8 +123,8 @@ protected:
 	UFUNCTION()
 	void OnEnemyDefeated();
 
-	/** 根据曲线或基础方向应用本帧移动 */
-	void ApplyMovement(float DeltaTime);
+	/** 根据曲线或基础方向应用本帧移动（Boss 可覆盖实现专属移动） */
+	virtual void ApplyMovement(float DeltaTime);
 
 	/** 生成后已存活时间 */
 	float AliveTime = 0.0f;
