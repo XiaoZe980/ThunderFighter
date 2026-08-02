@@ -90,10 +90,13 @@ void ABossEnemy::ApplyMovement(float DeltaTime)
 {
 	if (!bHasEntered)
 	{
-		// 入场阶段：沿 +X 进入战场，到达 HoverX 后停住
+		// 入场阶段：朝 HoverX 方向移动，到达后停住
 		FVector Pos = GetActorLocation();
-		Pos.X += EnterSpeed * DeltaTime;
-		if (Pos.X >= HoverX)
+		float Dir = FMath::Sign(HoverX - Pos.X); // 从生成点朝 HoverX 移动（不依赖从哪侧进入）
+		Pos.X += Dir * EnterSpeed * DeltaTime;
+
+		bool bArrived = (Dir > 0.0f) ? (Pos.X >= HoverX) : (Pos.X <= HoverX);
+		if (bArrived)
 		{
 			Pos.X = HoverX;
 			bHasEntered = true;
