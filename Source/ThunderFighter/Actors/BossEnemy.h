@@ -68,6 +68,14 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	/** 获取 Boss 当前血量百分比（0.0-1.0），供 HUD 血条使用 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Boss")
+	float GetHealthPercent() const;
+
+	/** 获取 Boss 当前最大血量，供 HUD 显示 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Boss")
+	float GetMaxHealth() const;
+
 protected:
 	virtual void BeginPlay() override;
 

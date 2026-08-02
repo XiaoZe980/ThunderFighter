@@ -8,6 +8,7 @@
 #include "ThunderFighterHUD.generated.h"
 
 class UUserWidget;
+class ABossEnemy;
 
 /**
  * ThunderFighter 的 HUD 类。
@@ -20,6 +21,8 @@ class THUNDERFIGHTER_API AThunderFighterHUD : public AHUD
 
 public:
 	AThunderFighterHUD();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,6 +48,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void HidePauseMenu();
 
+	/** 显示 Boss 血条 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
+	void ShowBossHealthBar();
+
+	/** 隐藏 Boss 血条 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
+	void HideBossHealthBar();
+
 	// ---- 蓝图控件类型 ----
 
 	/** 游戏玩法 HUD 控件类型（分数、生命值等） */
@@ -59,6 +70,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
 
+	/** Boss 血条控件类型 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
+	TSubclassOf<UUserWidget> BossHealthBarClass;
+
 protected:
 	/** 当前活跃的游戏玩法 HUD 控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
@@ -71,4 +86,8 @@ protected:
 	/** 当前活跃的暂停菜单控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TObjectPtr<UUserWidget> PauseMenuWidget;
+
+	/** 当前活跃的 Boss 血条控件实例 */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
+	TObjectPtr<UUserWidget> BossHealthBarWidget;
 };

@@ -67,6 +67,16 @@ void ABossEnemy::BeginPlay()
 	}
 }
 
+float ABossEnemy::GetHealthPercent() const
+{
+	return HealthComponent ? HealthComponent->GetHealthPercent() : 0.0f;
+}
+
+float ABossEnemy::GetMaxHealth() const
+{
+	return HealthComponent ? HealthComponent->GetMaxHealth() : 0.0f;
+}
+
 void ABossEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
