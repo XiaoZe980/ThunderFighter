@@ -48,6 +48,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UThunderFighterWeaponComponent> WeaponComponent;
 
+	/** 相机底座：X 跟随玩家（前后），Y 固定在 0（横向移动时相机不跟随） */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")
+	TObjectPtr<USceneComponent> CameraRig;
+
 	/** 俯视摄像机的弹簧臂 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
@@ -69,6 +73,14 @@ public:
 	/** 屏幕边界边距（视口百分比，0.0-0.5） */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Movement")
 	float ScreenBoundaryMargin = 0.05f;
+
+	/** 地图前边界（X 轴最小，玩家前后移动的最远后退位置） */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Movement|Map")
+	float MapBoundMinX = -3000.0f;
+
+	/** 地图后边界（X 轴最大，玩家前后移动的最远前进位置） */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Movement|Map")
+	float MapBoundMaxX = 3000.0f;
 
 	// ---- 射击 ----
 

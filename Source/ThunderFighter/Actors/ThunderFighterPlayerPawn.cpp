@@ -8,6 +8,7 @@
 #include "Core/ThunderFighterGameMode.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -38,12 +39,17 @@ AThunderFighterPlayerPawn::AThunderFighterPlayerPawn()
 	// 武器组件
 	WeaponComponent = CreateDefaultSubobject<UThunderFighterWeaponComponent>(TEXT("WeaponComponent"));
 
-	// 弹簧臂——将摄像机悬停在玩家上方，俯视视角
+	// 相机底座——横向移动时相机不跟随
+	CameraRig = CreateDefaultSubobject<USceneComponent>(TEXT("CameraRig"));
+	CameraRig->SetupAttachment(RootComponent);
+	CameraRig->SetRelativeLocation(FVector::ZeroVector);
+
+	// 弹簧臂——将摄像机悬停在玩家上方，俯视视角（Yaw=90 实现横屏）
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
-	CameraSpringArm->SetupAttachment(RootComponent);
-	CameraSpringArm->TargetArmLength = 3000.0f;                       // 战场上方高度
-	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f)); // 向下倾斜以实现俯视视角
-	CameraSpringArm->bDoCollisionTest = false;                        // 不与几何体碰撞
+	CameraSpringArm->SetupAttachment(CameraRig);
+	CameraSpringArm->TargetArmLength = 3000.0f;                        // 战场上方高度
+	CameraSpringArm->SetRelativeRotation(FRotator(-70.0f, 90.0f, 0.0f)); // 俯视 + 横屏朝向
+	CameraSpringArm->bDoCollisionTest = false;                         // 不与几何体碰撞
 	CameraSpringArm->bInheritPitch = false;
 	CameraSpringArm->bInheritYaw = false;
 	CameraSpringArm->bInheritRoll = false;
@@ -92,6 +98,13 @@ void AThunderFighterPlayerPawn::Tick(float DeltaTime)
 		{
 			bIsInvincible = false;
 		}
+	}
+
+	// 相机底座：抵消玩家 Y 位移，使相机世界位置 = (玩家X, 0, 0)
+	// 玩家前后移动（X）相机跟随；横向移动（Y）相机固定
+	if (CameraRig)
+	{
+		CameraRig->SetRelativeLocation(FVector(0.0f, -GetActorLocation().Y, 0.0f));
 	}
 }
 
@@ -179,7 +192,9 @@ void AThunderFighterPlayerPawn::ClampToScreenBounds()
 	GetScreenWorldBounds(MinX, MaxX, MinY, MaxY);
 
 	FVector Pos = GetActorLocation();
-	Pos.X = FMath::Clamp(Pos.X, MinX, MaxX);
+	// 前后移动（X）：受地图边界限制，相机跟随
+	Pos.X = FMath::Clamp(Pos.X, MapBoundMinX, MapBoundMaxX);
+	// 横向移动（Y）：受屏幕（相机视野）边界限制
 	Pos.Y = FMath::Clamp(Pos.Y, MinY, MaxY);
 	SetActorLocation(Pos);
 }
