@@ -81,6 +81,12 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 		{
 			HUD->ShowGameOverScreen(CurrentScore, HighScore);
 		}
+
+		// 切换为鼠标 + UI 输入模式，让玩家能点击结算界面按钮
+		PC->bShowMouseCursor = true;
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PC->SetInputMode(InputMode);
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player defeated! Final Score: %d | High Score: %d"), CurrentScore, HighScore);
