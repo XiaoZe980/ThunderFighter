@@ -2,6 +2,7 @@
 
 #include "ThunderFighterHUD.h"
 #include "BossHealthBarWidget.h"
+#include "GameOverWidget.h"
 #include "Actors/BossEnemy.h"
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
@@ -77,12 +78,22 @@ void AThunderFighterHUD::ShowGameOverScreen(int32 FinalScore, int32 HighScore)
 {
 	HideGameplayHUD();
 
+	// 同时隐藏 Boss 血条
+	HideBossHealthBar();
+
 	if (!GameOverWidgetClass) return;
 
 	GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass);
 	if (GameOverWidget)
 	{
 		GameOverWidget->AddToViewport(10); // 高 Z-Order
+
+		// 设置分数信息
+		if (UGameOverWidget* GameOver = Cast<UGameOverWidget>(GameOverWidget))
+		{
+			GameOver->SetScoreInfo(FinalScore, HighScore);
+			GameOver->SetIsNewRecord(FinalScore >= HighScore && FinalScore > 0);
+		}
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Game Over! Score: %d | High Score: %d"), FinalScore, HighScore);

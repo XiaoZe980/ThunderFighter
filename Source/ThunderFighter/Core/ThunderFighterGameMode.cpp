@@ -2,6 +2,8 @@
 
 #include "ThunderFighterGameMode.h"
 #include "ThunderFighterPlayerController.h"
+#include "ThunderFighterGameInstance.h"
+#include "UI/ThunderFighterHUD.h"
 #include "Actors/EnemySpawner.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -63,8 +65,25 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 		EnemySpawnerRef->StopSpawning();
 	}
 
-	// 通过日志通知
-	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player defeated! Final Score: %d"), CurrentScore);
+	// 更新历史最高分
+	int32 HighScore = CurrentScore;
+	if (UThunderFighterGameInstance* GI = Cast<UThunderFighterGameInstance>(GetGameInstance()))
+	{
+		GI->TryUpdateHighScore(CurrentScore);
+		HighScore = GI->GetHighScore();
+	}
+
+	// 显示游戏结束结算界面
+	AThunderFighterPlayerController* PC = Cast<AThunderFighterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		if (AThunderFighterHUD* HUD = Cast<AThunderFighterHUD>(PC->GetHUD()))
+		{
+			HUD->ShowGameOverScreen(CurrentScore, HighScore);
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player defeated! Final Score: %d | High Score: %d"), CurrentScore, HighScore);
 }
 
 void AThunderFighterGameMode::RestartGame()
