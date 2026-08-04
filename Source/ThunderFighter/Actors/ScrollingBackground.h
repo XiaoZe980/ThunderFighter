@@ -47,9 +47,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	FVector ScrollDirection = FVector(-1.0f, 0.0f, 0.0f);
 
-	/** 每个背景平面的长度（沿滚动方向）。当平面移动超过此偏移时循环。0 = 自动计算。 */
+	/** 每个背景平面沿滚动方向的长度（单位）。代码会按此自动缩放平面，同时用于循环衔接。 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
-	float PlaneLength = 0.0f;
+	float PlaneLength = 3000.0f;
+
+	/** 每个背景平面横向（垂直于滚动方向）的宽度（单位）。需覆盖屏幕横向范围。 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
+	float PlaneWidth = 7000.0f;
 
 	/** 两个平面之间的 Z 轴间隔，避免 z-fighting 闪烁 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")

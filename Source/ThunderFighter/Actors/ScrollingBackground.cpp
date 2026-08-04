@@ -20,19 +20,17 @@ void AScrollingBackground::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 仅当未手动配置 PlaneLength 时，自动计算平面沿滚动方向的实际长度
-	// （限制上限，避免平面 Scale 巨大时计算出极端值）
-	if (PlaneLength <= 0.0f && BackgroundPlane1)
-	{
-		FBoxSphereBounds Bounds = BackgroundPlane1->CalcBounds(BackgroundPlane1->GetComponentTransform());
-		FVector Size = Bounds.BoxExtent * 2.0f; // 平面完整尺寸
-		float ActualLength = FMath::Abs(FVector::DotProduct(Size, ScrollDirection.GetSafeNormal()));
-		PlaneLength = FMath::Clamp(ActualLength, 1.0f, 100000.0f);
-	}
+	// 按配置自动缩放平面（Plane mesh 默认 100x100 单位，X=PlaneLength, Y=PlaneWidth）
+	const FVector PlaneScale(PlaneLength / 100.0f, PlaneWidth / 100.0f, 1.0f);
+	BackgroundPlane1->SetRelativeScale3D(PlaneScale);
+	BackgroundPlane2->SetRelativeScale3D(PlaneScale);
 
 	// 将第二个平面定位在第一个平面之后（沿滚动方向衔接），并在 Z 轴上错开，避免 z-fighting 闪烁
 	PlaneOffset = -ScrollDirection.GetSafeNormal() * PlaneLength;
 	BackgroundPlane2->SetRelativeLocation(FVector(PlaneOffset.X, PlaneOffset.Y, ZSeparation));
+
+	UE_LOG(LogTemp, Log, TEXT("[Background] PlaneLength=%.0f PlaneWidth=%.0f Scale=(%.1f, %.1f, 1)"),
+		PlaneLength, PlaneWidth, PlaneScale.X, PlaneScale.Y);
 }
 
 void AScrollingBackground::Tick(float DeltaTime)
