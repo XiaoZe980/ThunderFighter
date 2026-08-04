@@ -20,16 +20,14 @@ void AScrollingBackground::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 自动计算平面沿滚动方向的实际长度，确保两个平面首尾无缝衔接
-	if (BackgroundPlane1)
+	// 仅当未手动配置 PlaneLength 时，自动计算平面沿滚动方向的实际长度
+	// （限制上限，避免平面 Scale 巨大时计算出极端值）
+	if (PlaneLength <= 0.0f && BackgroundPlane1)
 	{
 		FBoxSphereBounds Bounds = BackgroundPlane1->CalcBounds(BackgroundPlane1->GetComponentTransform());
 		FVector Size = Bounds.BoxExtent * 2.0f; // 平面完整尺寸
 		float ActualLength = FMath::Abs(FVector::DotProduct(Size, ScrollDirection.GetSafeNormal()));
-		if (ActualLength > 0.0f)
-		{
-			PlaneLength = ActualLength;
-		}
+		PlaneLength = FMath::Clamp(ActualLength, 1.0f, 100000.0f);
 	}
 
 	// 将第二个平面定位在第一个平面之后（沿滚动方向衔接），并在 Z 轴上错开，避免 z-fighting 闪烁
