@@ -20,9 +20,9 @@ void AScrollingBackground::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 将第二个平面定位在第一个平面之后
+	// 将第二个平面定位在第一个平面之后，并在 Z 轴上错开，避免 z-fighting 闪烁
 	PlaneOffset = -ScrollDirection.GetSafeNormal() * PlaneLength;
-	BackgroundPlane2->SetRelativeLocation(PlaneOffset);
+	BackgroundPlane2->SetRelativeLocation(FVector(PlaneOffset.X, PlaneOffset.Y, ZSeparation));
 }
 
 void AScrollingBackground::Tick(float DeltaTime)
@@ -54,18 +54,27 @@ void AScrollingBackground::ScrollPlanes(float DeltaTime)
 	float Plane2Dot = FVector::DotProduct(Plane2Pos, ScrollDir);
 
 	// 若 Plane1 点积更大（沿滚动方向更远）则 Plane1 位于"前方"
+	// 循环跳转时只调整 X/Y，保留各平面自己的 Z，避免 z-fighting
+	auto RepositionBehind = [](UStaticMeshComponent* PlaneToMove, UStaticMeshComponent* PlaneAhead, const FVector& Offset)
+	{
+		FVector NewPos = PlaneToMove->GetComponentLocation();
+		NewPos.X = PlaneAhead->GetComponentLocation().X + Offset.X;
+		NewPos.Y = PlaneAhead->GetComponentLocation().Y + Offset.Y;
+		PlaneToMove->SetWorldLocation(NewPos);
+	};
+
 	if (ScrollSpeed > 0.0f)
 	{
 		// 向前滚动：Plane1 在前
 		if (Plane2Dot < Plane1Dot - LoopThreshold)
 		{
 			// Plane2 落后太多，将其移到 Plane1 前方
-			BackgroundPlane2->SetWorldLocation(Plane1Pos + ScrollDir * LoopThreshold);
+			RepositionBehind(BackgroundPlane2, BackgroundPlane1, ScrollDir * LoopThreshold);
 		}
 		else if (Plane1Dot < Plane2Dot - LoopThreshold)
 		{
 			// Plane1 落后太多，将其移到 Plane2 前方
-			BackgroundPlane1->SetWorldLocation(Plane2Pos + ScrollDir * LoopThreshold);
+			RepositionBehind(BackgroundPlane1, BackgroundPlane2, ScrollDir * LoopThreshold);
 		}
 	}
 	else
@@ -73,11 +82,11 @@ void AScrollingBackground::ScrollPlanes(float DeltaTime)
 		// 向后滚动
 		if (Plane2Dot > Plane1Dot + LoopThreshold)
 		{
-			BackgroundPlane2->SetWorldLocation(Plane1Pos - ScrollDir * LoopThreshold);
+			RepositionBehind(BackgroundPlane2, BackgroundPlane1, -ScrollDir * LoopThreshold);
 		}
 		else if (Plane1Dot > Plane2Dot + LoopThreshold)
 		{
-			BackgroundPlane1->SetWorldLocation(Plane2Pos - ScrollDir * LoopThreshold);
+			RepositionBehind(BackgroundPlane1, BackgroundPlane2, -ScrollDir * LoopThreshold);
 		}
 	}
 }

@@ -51,6 +51,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	float PlaneLength = 2000.0f;
 
+	/** 两个平面之间的 Z 轴间隔，避免 z-fighting 闪烁 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
+	float ZSeparation = 10.0f;
+
 	/** 启用/禁用滚动 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	bool bEnableScrolling = true;
