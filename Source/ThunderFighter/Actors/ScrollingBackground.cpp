@@ -36,6 +36,14 @@ void AScrollingBackground::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// 诊断：打印前几次 Tick 的滚动值，确认滚动生效
+	if (DebugLogCount < 5)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[Background] Tick ScrollSpeed=%.1f ScrollDistance=%.1f DeltaTime=%.4f bEnable=%d"),
+			ScrollSpeed, ScrollDistance, DeltaTime, bEnableScrolling ? 1 : 0);
+		DebugLogCount++;
+	}
+
 	if (!bEnableScrolling) return;
 	if (PlaneLength <= 0.0f) return;
 

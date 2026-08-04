@@ -69,4 +69,7 @@ private:
 
 	/** Plane1 的初始世界位置（滚动基准点） */
 	FVector InitialPlane1Pos = FVector::ZeroVector;
+
+	/** 诊断日志计数（仅打印前几次） */
+	int32 DebugLogCount = 0;
 };
