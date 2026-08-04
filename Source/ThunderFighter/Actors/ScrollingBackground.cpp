@@ -20,14 +20,13 @@ void AScrollingBackground::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 记录 Plane1 初始世界位置，作为滚动基准点
+	InitialPlane1Pos = BackgroundPlane1->GetComponentLocation();
+
 	// 按配置自动缩放平面（Plane mesh 默认 100x100 单位，X=PlaneLength, Y=PlaneWidth）
 	const FVector PlaneScale(PlaneLength / 100.0f, PlaneWidth / 100.0f, 1.0f);
 	BackgroundPlane1->SetRelativeScale3D(PlaneScale);
 	BackgroundPlane2->SetRelativeScale3D(PlaneScale);
-
-	// 将第二个平面定位在第一个平面之后（沿滚动方向衔接），并在 Z 轴上错开，避免 z-fighting 闪烁
-	PlaneOffset = -ScrollDirection.GetSafeNormal() * PlaneLength;
-	BackgroundPlane2->SetRelativeLocation(FVector(PlaneOffset.X, PlaneOffset.Y, ZSeparation));
 
 	UE_LOG(LogTemp, Log, TEXT("[Background] PlaneLength=%.0f PlaneWidth=%.0f Scale=(%.1f, %.1f, 1)"),
 		PlaneLength, PlaneWidth, PlaneScale.X, PlaneScale.Y);
@@ -37,64 +36,22 @@ void AScrollingBackground::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bEnableScrolling)
-	{
-		ScrollPlanes(DeltaTime);
-	}
-}
+	if (!bEnableScrolling) return;
+	if (PlaneLength <= 0.0f) return;
 
-void AScrollingBackground::ScrollPlanes(float DeltaTime)
-{
-	FVector Movement = ScrollDirection.GetSafeNormal() * ScrollSpeed * DeltaTime;
+	// 累计滚动距离，并对 PlaneLength 取模实现无缝循环
+	ScrollDistance += ScrollSpeed * DeltaTime;
+	ScrollDistance = FMath::Fmod(ScrollDistance, PlaneLength);
 
-	// 移动两个平面
-	BackgroundPlane1->AddWorldOffset(Movement, true);
-	BackgroundPlane2->AddWorldOffset(Movement, true);
+	const FVector Dir = ScrollDirection.GetSafeNormal();
 
-	FVector Plane1Pos = BackgroundPlane1->GetComponentLocation();
-	FVector Plane2Pos = BackgroundPlane2->GetComponentLocation();
+	// Plane1 沿滚动方向从基准点移动 ScrollDistance
+	FVector P1 = InitialPlane1Pos + Dir * ScrollDistance;
 
-	FVector ScrollDir = ScrollDirection.GetSafeNormal();
-	float LoopThreshold = PlaneLength;
+	// Plane2 位于 Plane1 沿滚动方向的前方 PlaneLength 处（衔接）
+	FVector P2 = P1 - Dir * PlaneLength;
+	P2.Z = P1.Z + ZSeparation; // Z 轴错开，避免 z-fighting
 
-	// 检查 Plane1 是否已滚动超过循环点
-	float Plane1Dot = FVector::DotProduct(Plane1Pos, ScrollDir);
-	float Plane2Dot = FVector::DotProduct(Plane2Pos, ScrollDir);
-
-	// 若 Plane1 点积更大（沿滚动方向更远）则 Plane1 位于"前方"
-	// 循环跳转时只调整 X/Y，保留各平面自己的 Z，避免 z-fighting
-	auto RepositionBehind = [](UStaticMeshComponent* PlaneToMove, UStaticMeshComponent* PlaneAhead, const FVector& Offset)
-	{
-		FVector NewPos = PlaneToMove->GetComponentLocation();
-		NewPos.X = PlaneAhead->GetComponentLocation().X + Offset.X;
-		NewPos.Y = PlaneAhead->GetComponentLocation().Y + Offset.Y;
-		PlaneToMove->SetWorldLocation(NewPos);
-	};
-
-	if (ScrollSpeed > 0.0f)
-	{
-		// 向前滚动：Plane1 在前
-		if (Plane2Dot < Plane1Dot - LoopThreshold)
-		{
-			// Plane2 落后太多，将其移到 Plane1 前方
-			RepositionBehind(BackgroundPlane2, BackgroundPlane1, ScrollDir * LoopThreshold);
-		}
-		else if (Plane1Dot < Plane2Dot - LoopThreshold)
-		{
-			// Plane1 落后太多，将其移到 Plane2 前方
-			RepositionBehind(BackgroundPlane1, BackgroundPlane2, ScrollDir * LoopThreshold);
-		}
-	}
-	else
-	{
-		// 向后滚动
-		if (Plane2Dot > Plane1Dot + LoopThreshold)
-		{
-			RepositionBehind(BackgroundPlane2, BackgroundPlane1, -ScrollDir * LoopThreshold);
-		}
-		else if (Plane1Dot > Plane2Dot + LoopThreshold)
-		{
-			RepositionBehind(BackgroundPlane1, BackgroundPlane2, -ScrollDir * LoopThreshold);
-		}
-	}
+	BackgroundPlane1->SetWorldLocation(P1);
+	BackgroundPlane2->SetWorldLocation(P2);
 }

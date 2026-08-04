@@ -63,10 +63,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Background")
 	bool bEnableScrolling = true;
 
-protected:
-	/** 更新滚动位置并处理循环 */
-	void ScrollPlanes(float DeltaTime);
+private:
+	/** 累计滚动距离（对 PlaneLength 取模实现无缝循环） */
+	float ScrollDistance = 0.0f;
 
-	/** 两个平面之间的初始偏移 */
-	FVector PlaneOffset;
+	/** Plane1 的初始世界位置（滚动基准点） */
+	FVector InitialPlane1Pos = FVector::ZeroVector;
 };
