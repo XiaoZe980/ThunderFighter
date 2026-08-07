@@ -49,6 +49,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "ThunderFighter|Level")
 	FOnPlayerLevelUp OnLevelUp;
 
+	/** 设置经验获取倍率（能量收集强化） */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Level")
+	void SetExpMultiplier(float Multiplier) { ExpMultiplier = FMath::Max(0.01f, Multiplier); }
+
+	/** 获取经验获取倍率 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Level")
+	float GetExpMultiplier() const { return ExpMultiplier; }
+
 protected:
 	/** 1 级升 2 级所需经验 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|Level")
@@ -69,6 +77,10 @@ protected:
 	/** 升级所需经验（当前等级） */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Level")
 	float ExperienceToNext = 10.0f;
+
+	/** 经验获取倍率（强化加成） */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Level")
+	float ExpMultiplier = 1.0f;
 
 private:
 	/** 检查并处理升级（可能连续升多级） */

@@ -185,8 +185,8 @@ void AThunderFighterPlayerPawn::OnOverlap(UPrimitiveComponent* OverlappedCompone
 			OtherActor->Destroy();
 		}
 
-		// 受伤后短暂无敌
-		GrantInvincibility(1.0f);
+		// 受伤后短暂无敌（时长可配置/强化提升）
+		GrantInvincibility(InvincibilityDuration);
 	}
 }
 

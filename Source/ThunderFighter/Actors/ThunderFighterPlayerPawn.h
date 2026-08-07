@@ -113,6 +113,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float CollisionDamage = 20.0f;
 
+	/** 受伤后的无敌时长（秒，不屈强化可提升） */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ThunderFighter|Combat")
+	float InvincibilityDuration = 1.0f;
+
 	// ---- 无敌 ----
 
 	/** 授予临时无敌状态（例如受到伤害后） */

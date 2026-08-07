@@ -5,10 +5,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Core/UpgradeTypes.h"
 #include "ThunderFighterHUD.generated.h"
 
 class UUserWidget;
 class ABossEnemy;
+class AThunderFighterGameMode;
 
 /**
  * ThunderFighter 的 HUD 类。
@@ -56,6 +58,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
 	void HideBossHealthBar();
 
+	/** 显示升级三选一界面 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
+	void ShowUpgradeSelect(const TArray<FUpgradeDefinition>& Options, AThunderFighterGameMode* GameMode);
+
+	/** 隐藏升级三选一界面 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|UI")
+	void HideUpgradeSelect();
+
 	// ---- 蓝图控件类型 ----
 
 	/** 游戏玩法 HUD 控件类型（分数、生命值等） */
@@ -74,6 +84,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TSubclassOf<UUserWidget> BossHealthBarClass;
 
+	/** 升级三选一控件类型 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ThunderFighter|UI")
+	TSubclassOf<UUserWidget> UpgradeSelectClass;
+
 protected:
 	/** 当前活跃的游戏玩法 HUD 控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
@@ -90,4 +104,8 @@ protected:
 	/** 当前活跃的 Boss 血条控件实例 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
 	TObjectPtr<UUserWidget> BossHealthBarWidget;
+
+	/** 当前活跃的升级三选一控件实例 */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|UI")
+	TObjectPtr<UUserWidget> UpgradeSelectWidget;
 };

@@ -3,8 +3,12 @@
 #include "ThunderFighterGameMode.h"
 #include "ThunderFighterPlayerController.h"
 #include "ThunderFighterGameInstance.h"
+#include "UpgradeSystem.h"
 #include "UI/ThunderFighterHUD.h"
+#include "UI/UpgradeSelectWidget.h"
 #include "Actors/EnemySpawner.h"
+#include "Actors/ThunderFighterPlayerPawn.h"
+#include "Components/PlayerLevelComponent.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -13,6 +17,9 @@ AThunderFighterGameMode::AThunderFighterGameMode()
 	// 允许 Tick
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 0.0f;
+
+	// 强化系统组件
+	UpgradeSystem = CreateDefaultSubobject<UUpgradeSystem>(TEXT("UpgradeSystem"));
 }
 
 void AThunderFighterGameMode::BeginPlay()
@@ -24,6 +31,16 @@ void AThunderFighterGameMode::BeginPlay()
 	{
 		EnemySpawnerRef = *It;
 		break;
+	}
+
+	// 绑定玩家升级事件
+	AThunderFighterPlayerPawn* Player = Cast<AThunderFighterPlayerPawn>(UGameplayStatics::GetPlayerPawn(this, 0));
+	if (Player)
+	{
+		if (UPlayerLevelComponent* Level = Player->FindComponentByClass<UPlayerLevelComponent>())
+		{
+			Level->OnLevelUp.AddDynamic(this, &AThunderFighterGameMode::OnPlayerLevelUp);
+		}
 	}
 }
 
@@ -90,6 +107,67 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player defeated! Final Score: %d | High Score: %d"), CurrentScore, HighScore);
+}
+
+void AThunderFighterGameMode::OnPlayerLevelUp()
+{
+	// 防止重复触发（比如连续升级正在处理中）
+	if (bIsChoosingUpgrade) return;
+
+	bIsChoosingUpgrade = true;
+
+	// 抽取 3 个强化候选
+	if (UpgradeSystem)
+	{
+		PendingUpgradeOptions = UpgradeSystem->DrawOptions();
+	}
+
+	// 暂停游戏，防止选择期间继续战斗
+	UGameplayStatics::SetGamePaused(this, true);
+
+	// 通过 PlayerController 的 HUD 弹出三选一界面
+	AThunderFighterPlayerController* PC = Cast<AThunderFighterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		if (AThunderFighterHUD* HUD = Cast<AThunderFighterHUD>(PC->GetHUD()))
+		{
+			HUD->ShowUpgradeSelect(PendingUpgradeOptions, this);
+		}
+		else
+		{
+			// 没有 HUD 时直接应用第一个（容错）
+			OnUpgradeChosen(0);
+		}
+	}
+	else
+	{
+		OnUpgradeChosen(0);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 升级! 弹出 %d 个强化选项"), PendingUpgradeOptions.Num());
+}
+
+void AThunderFighterGameMode::OnUpgradeChosen(int32 SelectedIndex)
+{
+	// 应用选择的强化
+	if (UpgradeSystem && PendingUpgradeOptions.IsValidIndex(SelectedIndex))
+	{
+		UpgradeSystem->ApplyUpgrade(PendingUpgradeOptions[SelectedIndex]);
+	}
+
+	// 关闭强化界面
+	AThunderFighterPlayerController* PC = Cast<AThunderFighterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		if (AThunderFighterHUD* HUD = Cast<AThunderFighterHUD>(PC->GetHUD()))
+		{
+			HUD->HideUpgradeSelect();
+		}
+	}
+
+	// 恢复游戏
+	bIsChoosingUpgrade = false;
+	UGameplayStatics::SetGamePaused(this, false);
 }
 
 void AThunderFighterGameMode::RestartGame()

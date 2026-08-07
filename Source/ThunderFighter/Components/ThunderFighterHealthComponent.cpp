@@ -4,7 +4,8 @@
 
 UThunderFighterHealthComponent::UThunderFighterHealthComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	// 需要 Tick 处理再生回血
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UThunderFighterHealthComponent::BeginPlay()
@@ -12,12 +13,38 @@ void UThunderFighterHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CurrentHealth = MaxHealth;
+	Shield = 0.0f;
 	bIsDead = false;
+}
+
+void UThunderFighterHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// 再生回血
+	if (RegenerationPerSecond > 0.0f && !bIsDead)
+	{
+		Heal(RegenerationPerSecond * DeltaTime);
+	}
 }
 
 void UThunderFighterHealthComponent::TakeDamage(float DamageAmount)
 {
 	if (bIsDead || DamageAmount <= 0.0f) return;
+
+	// 先扣护盾
+	if (Shield > 0.0f)
+	{
+		float ShieldAbsorb = FMath::Min(Shield, DamageAmount);
+		Shield -= ShieldAbsorb;
+		DamageAmount -= ShieldAbsorb;
+
+		if (DamageAmount <= 0.0f)
+		{
+			OnDamageTaken.Broadcast(ShieldAbsorb);
+			return; // 护盾完全吸收
+		}
+	}
 
 	CurrentHealth = FMath::Max(0.0f, CurrentHealth - DamageAmount);
 
@@ -51,4 +78,16 @@ void UThunderFighterHealthComponent::SetMaxHealth(float NewMaxHealth, bool bRese
 		CurrentHealth = MaxHealth;
 		OnHealthChanged.Broadcast(CurrentHealth);
 	}
+}
+
+void UThunderFighterHealthComponent::GrantShield(float ShieldAmount)
+{
+	Shield += ShieldAmount;
+	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] %s 获得护盾 %.1f（当前 %.1f）"),
+		*GetOwner()->GetName(), ShieldAmount, Shield);
+}
+
+void UThunderFighterHealthComponent::SetRegeneration(float PerSecond)
+{
+	RegenerationPerSecond = FMath::Max(0.0f, PerSecond);
 }

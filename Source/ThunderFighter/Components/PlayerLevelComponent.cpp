@@ -11,7 +11,8 @@ void UPlayerLevelComponent::AddExperience(float Amount)
 {
 	if (Amount <= 0.0f) return;
 
-	Experience += Amount;
+	// 经验获取受强化倍率影响
+	Experience += Amount * ExpMultiplier;
 	CheckLevelUp();
 }
 

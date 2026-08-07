@@ -3,6 +3,8 @@
 #include "ThunderFighterHUD.h"
 #include "BossHealthBarWidget.h"
 #include "GameOverWidget.h"
+#include "UpgradeSelectWidget.h"
+#include "Core/ThunderFighterGameMode.h"
 #include "Actors/BossEnemy.h"
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
@@ -139,5 +141,35 @@ void AThunderFighterHUD::HideBossHealthBar()
 	{
 		BossHealthBarWidget->RemoveFromParent();
 		BossHealthBarWidget = nullptr;
+	}
+}
+
+void AThunderFighterHUD::ShowUpgradeSelect(const TArray<FUpgradeDefinition>& Options, AThunderFighterGameMode* GameMode)
+{
+	if (UpgradeSelectWidget || !UpgradeSelectClass) return;
+
+	UpgradeSelectWidget = CreateWidget<UUserWidget>(GetWorld(), UpgradeSelectClass);
+	if (UpgradeSelectWidget)
+	{
+		UpgradeSelectWidget->AddToViewport(20); // 最高层级
+
+		// 传入选项并绑定选择回调
+		if (UUpgradeSelectWidget* SelectUI = Cast<UUpgradeSelectWidget>(UpgradeSelectWidget))
+		{
+			SelectUI->ShowOptions(Options);
+			if (GameMode)
+			{
+				SelectUI->OnUpgradeSelected.AddDynamic(GameMode, &AThunderFighterGameMode::OnUpgradeChosen);
+			}
+		}
+	}
+}
+
+void AThunderFighterHUD::HideUpgradeSelect()
+{
+	if (UpgradeSelectWidget)
+	{
+		UpgradeSelectWidget->RemoveFromParent();
+		UpgradeSelectWidget = nullptr;
 	}
 }

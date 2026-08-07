@@ -23,6 +23,8 @@ class THUNDERFIGHTER_API UThunderFighterHealthComponent : public UActorComponent
 public:
 	UThunderFighterHealthComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,6 +57,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Health")
 	void SetMaxHealth(float NewMaxHealth, bool bResetCurrentHealth = true);
 
+	/** 授予护盾值（先吸收伤害，护盾耗尽再扣血） */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Health")
+	void GrantShield(float ShieldAmount);
+
+	/** 获取当前护盾值 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Health")
+	float GetShield() const { return Shield; }
+
+	/** 每秒回血（再生强化） */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Health")
+	void SetRegeneration(float PerSecond);
+
+	/** 获取当前每秒回血量 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Health")
+	float GetRegeneration() const { return RegenerationPerSecond; }
+
 	// ---- 委托 ----
 
 	/** 生命值归零时触发 */
@@ -77,6 +95,14 @@ protected:
 	/** 当前生命值 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Health")
 	float CurrentHealth = 100.0f;
+
+	/** 护盾值（先吸收伤害） */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Health")
+	float Shield = 0.0f;
+
+	/** 每秒回血量（再生强化，0 = 不回血） */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Health")
+	float RegenerationPerSecond = 0.0f;
 
 	/** 此 Actor 是否已死亡？（防止多次触发死亡事件） */
 	bool bIsDead = false;
