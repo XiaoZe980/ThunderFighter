@@ -5,12 +5,50 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Core/UpgradeTypes.h"
 #include "ThunderFighterWeaponComponent.generated.h"
 
 class AProjectileBase;
 
 /**
- * 附加到玩家 Pawn 上。管理武器等级、射速和弹幕生成模式。
+ * 武器强化修饰符。Roguelike 强化卡通过这些修饰符叠加到基础武器上。
+ */
+USTRUCT(BlueprintType)
+struct FWeaponModifiers
+{
+	GENERATED_BODY()
+
+	/** +弹道数（在基础武器模式上叠加） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	int32 BonusBullets = 0;
+
+	/** 伤害倍率（1.0 = 基础伤害） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float DamageMultiplier = 1.0f;
+
+	/** 射速倍率（1.0 = 基础射速） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float FireRateMultiplier = 1.0f;
+
+	/** 子弹可穿透敌人 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool bPiercing = false;
+
+	/** 子弹追踪最近敌人 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool bHoming = false;
+
+	/** 子弹命中后弹射次数 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	int32 BounceCount = 0;
+
+	/** 侧翼僚机数量（每级两侧各 +1 个发射位） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	int32 SideWingCount = 0;
+};
+
+/**
+ * 附加到玩家 Pawn 上。管理武器等级、射速、弹幕生成模式和强化修饰符。
  */
 UCLASS(ClassGroup=(ThunderFighter), meta=(BlueprintSpawnableComponent))
 class THUNDERFIGHTER_API UThunderFighterWeaponComponent : public UActorComponent
@@ -43,6 +81,14 @@ public:
 	/** 武器等级提升 1 级 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Weapon")
 	void UpgradeWeapon();
+
+	/** 应用一个强化效果（Roguelike 强化卡调用） */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Weapon|Upgrade")
+	void ApplyModifier(EUpgradeEffect Effect, float Value);
+
+	/** 获取当前强化修饰符 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Weapon|Upgrade")
+	const FWeaponModifiers& GetModifiers() const { return Modifiers; }
 
 	/** 获取当前武器等级 */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Weapon")
@@ -115,4 +161,7 @@ private:
 
 	/** 射速时间累计器 */
 	float FireTimer = 0.0f;
+
+	/** 当前强化修饰符（Roguelike 叠加） */
+	FWeaponModifiers Modifiers;
 };

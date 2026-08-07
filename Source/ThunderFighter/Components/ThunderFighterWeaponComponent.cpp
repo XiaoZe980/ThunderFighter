@@ -50,7 +50,9 @@ void UThunderFighterWeaponComponent::TickComponent(float DeltaTime, ELevelTick T
 	if (FireTimer <= 0.0f)
 	{
 		FirePattern();
-		FireTimer = 1.0f / BaseFireRate;
+		// 射速受强化倍率影响
+		float FinalFireRate = BaseFireRate * FMath::Max(0.01f, Modifiers.FireRateMultiplier);
+		FireTimer = 1.0f / FinalFireRate;
 	}
 }
 
@@ -92,6 +94,7 @@ void UThunderFighterWeaponComponent::FirePattern()
 {
 	if (!GetWorld()) return;
 
+	// 1. 基础武器等级模式
 	const TArray<FVector>* Pattern = nullptr;
 	switch (WeaponLevel)
 	{
@@ -103,11 +106,28 @@ void UThunderFighterWeaponComponent::FirePattern()
 		default: Pattern = &PatternLevel1; break;
 	}
 
-	if (!Pattern || Pattern->Num() == 0) return;
-
-	for (const FVector& Offset : *Pattern)
+	if (Pattern)
 	{
-		FireProjectile(Offset);
+		for (const FVector& Offset : *Pattern)
+		{
+			FireProjectile(Offset);
+		}
+	}
+
+	// 2. 强化额外弹道：在基础两侧对称叠加
+	for (int32 i = 1; i <= Modifiers.BonusBullets; i++)
+	{
+		float Spread = 25.0f * i;
+		FireProjectile(FVector(100.0f, -Spread, 0.0f));
+		FireProjectile(FVector(100.0f, Spread, 0.0f));
+	}
+
+	// 3. 侧翼僚机：在更远的两侧发射
+	const float WingOffset = 70.0f;
+	for (int32 i = 1; i <= Modifiers.SideWingCount; i++)
+	{
+		FireProjectile(FVector(100.0f, -WingOffset * i, 0.0f));
+		FireProjectile(FVector(100.0f, WingOffset * i, 0.0f));
 	}
 }
 
@@ -135,8 +155,45 @@ void UThunderFighterWeaponComponent::FireProjectile(FVector LocalOffset)
 
 	if (Projectile)
 	{
-		Projectile->Initialize(ProjectileSpeed, ProjectileDamage, EProjectileFaction::Player);
-		UE_LOG(LogTemp, Verbose, TEXT("[ThunderFighter] 生成子弹: 位置=(%.0f, %.0f, %.0f) 朝向=%s"),
-			SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z, *SpawnRotation.ToString());
+		// 伤害受强化倍率影响
+		float FinalDamage = ProjectileDamage * FMath::Max(0.01f, Modifiers.DamageMultiplier);
+
+		Projectile->Initialize(ProjectileSpeed, FinalDamage, EProjectileFaction::Player);
+		Projectile->SetPiercing(Modifiers.bPiercing);
+		Projectile->SetHoming(Modifiers.bHoming);
+		Projectile->SetBounceCount(Modifiers.BounceCount);
+	}
+}
+
+void UThunderFighterWeaponComponent::ApplyModifier(EUpgradeEffect Effect, float Value)
+{
+	switch (Effect)
+	{
+		case EUpgradeEffect::BonusBullets:
+			Modifiers.BonusBullets += (int32)Value;
+			break;
+		case EUpgradeEffect::DamageMultiplier:
+			Modifiers.DamageMultiplier += Value;
+			break;
+		case EUpgradeEffect::FireRateMultiplier:
+			Modifiers.FireRateMultiplier += Value;
+			break;
+		case EUpgradeEffect::Piercing:
+			Modifiers.bPiercing = true;
+			break;
+		case EUpgradeEffect::Homing:
+			Modifiers.bHoming = true;
+			break;
+		case EUpgradeEffect::Bounce:
+			Modifiers.BounceCount += (int32)Value;
+			break;
+		case EUpgradeEffect::SideWings:
+			Modifiers.SideWingCount += (int32)Value;
+			break;
+		case EUpgradeEffect::BombCount:
+			AddBomb((int32)Value);
+			break;
+		default:
+			break;
 	}
 }

@@ -56,8 +56,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
 	void SetLifetime(float InLifetime);
 
+	/** 设置穿透：命中敌人不销毁，继续飞行 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
+	void SetPiercing(bool bEnable);
+
+	/** 设置追踪：朝最近敌人转向 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
+	void SetHoming(bool bEnable);
+
+	/** 设置弹射次数：命中后转向最近敌人 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Projectile")
+	void SetBounceCount(int32 Count);
+
 protected:
 	virtual void BeginPlay() override;
+
+	/** 查找最近的敌对目标（追踪/弹射用） */
+	AActor* FindNearestEnemy();
+
+	/** 命中后转向最近敌人（弹射） */
+	void BounceToNearestEnemy();
 
 	/** 弹幕命中物体时调用（碰撞检测，用于有碰撞响应的场景） */
 	UFUNCTION()
@@ -109,4 +127,16 @@ protected:
 
 	/** 当前生命周期累计值 */
 	float LifetimeTimer = 0.0f;
+
+	/** 是否穿透（命中不销毁，只对同一敌人伤害一次） */
+	bool bPiercing = false;
+
+	/** 是否追踪（朝最近敌人转向） */
+	bool bHoming = false;
+
+	/** 剩余弹射次数 */
+	int32 BounceCountRemaining = 0;
+
+	/** 已命中过的目标（穿透/弹射时避免重复伤害） */
+	TSet<AActor*> HitTargets;
 };
