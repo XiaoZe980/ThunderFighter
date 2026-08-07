@@ -96,7 +96,7 @@ public:
 	/** 在给定的相对偏移位置生成单个敌人 */
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Spawner")
 	AEnemyBase* SpawnEnemy(TSubclassOf<AEnemyBase> EnemyClass, FVector SpawnOffset,
-		float OverrideHealth = 0.0f, float OverrideSpeed = 0.0f);
+		float OverrideHealth = 0.0f, float OverrideSpeed = 0.0f, float HealthMultiplier = 1.0f);
 
 	/** 当前是否正在生成？ */
 	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Spawner")
@@ -105,6 +105,9 @@ public:
 protected:
 	/** 处理当前波次并生成条目 */
 	void ProcessWaves(float DeltaTime);
+
+	/** 处理无尽模式生成（Roguelike 难度递增） */
+	void ProcessEndless(float DeltaTime);
 
 	// ---- 配置 ----
 
@@ -128,6 +131,40 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner")
 	float SpawnAreaHeight = 300.0f;
 
+	// ---- 无尽模式（Roguelike） ----
+
+	/** 启用无尽模式（基于时间持续生成，难度递增） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	bool bEndlessMode = true;
+
+	/** 基础生成间隔（秒） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	float BaseSpawnInterval = 2.0f;
+
+	/** 生成间隔最短值（秒） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	float MinSpawnInterval = 0.5f;
+
+	/** 每过多少分钟生成间隔降低 10% */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	float IntervalDecayMinutes = 1.0f;
+
+	/** 每过一分钟敌人血量增加比例（0.5 = 每分钟 +50%） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	float HealthScalePerMinute = 0.5f;
+
+	/** 无尽模式可生成的敌人类型池 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	TArray<TSubclassOf<AEnemyBase>> EndlessEnemyPool;
+
+	/** Boss 敌人类型（定期生成） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	TSubclassOf<AEnemyBase> BossClass;
+
+	/** Boss 出现间隔（秒） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Spawner|Endless")
+	float BossInterval = 60.0f;
+
 private:
 	/** 生成器是否处于激活状态？ */
 	bool bIsSpawning = false;
@@ -146,4 +183,16 @@ private:
 
 	/** 循环冷却计时器 */
 	float LoopTimer = 0.0f;
+
+	/** 无尽模式累计时间（秒） */
+	float EndlessTimer = 0.0f;
+
+	/** 无尽模式常规生成计时器 */
+	float EndlessSpawnTimer = 0.0f;
+
+	/** 下次 Boss 出现时间 */
+	float NextBossTime = 0.0f;
+
+	/** 当前 Boss 是否在场（等它死亡再生成下一个） */
+	bool bBossActive = false;
 };
