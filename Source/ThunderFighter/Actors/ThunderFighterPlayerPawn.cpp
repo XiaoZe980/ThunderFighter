@@ -5,6 +5,7 @@
 #include "BossEnemy.h"
 #include "Components/ThunderFighterHealthComponent.h"
 #include "Components/ThunderFighterWeaponComponent.h"
+#include "Components/PlayerLevelComponent.h"
 #include "Core/ThunderFighterGameMode.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -38,6 +39,9 @@ AThunderFighterPlayerPawn::AThunderFighterPlayerPawn()
 
 	// 武器组件
 	WeaponComponent = CreateDefaultSubobject<UThunderFighterWeaponComponent>(TEXT("WeaponComponent"));
+
+	// 经验/等级组件
+	LevelComponent = CreateDefaultSubobject<UPlayerLevelComponent>(TEXT("LevelComponent"));
 
 	// 相机底座——横向移动时相机不跟随
 	CameraRig = CreateDefaultSubobject<USceneComponent>(TEXT("CameraRig"));

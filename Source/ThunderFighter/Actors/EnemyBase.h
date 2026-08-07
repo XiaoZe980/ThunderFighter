@@ -14,6 +14,7 @@ class UStaticMeshComponent;
 class UBoxComponent;
 class UCurveFloat;
 class UCurveVector;
+class AEnergyCrystal;
 
 /**
  * 敌方基类，具有生命值、计分和可配置的移动模式。
@@ -107,6 +108,14 @@ public:
 	/** 碰到玩家时对玩家造成的伤害 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
 	float CollisionDamage = 20.0f;
+
+	/** 死亡时掉落的经验球蓝图类 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
+	TSubclassOf<AEnergyCrystal> EnergyCrystalClass;
+
+	/** 死亡时掉落经验球提供的经验值 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ThunderFighter|Combat")
+	float ExpValue = 5.0f;
 
 	// ---- 函数 ----
 

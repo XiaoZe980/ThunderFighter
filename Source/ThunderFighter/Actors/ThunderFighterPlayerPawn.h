@@ -9,6 +9,7 @@
 
 class UThunderFighterHealthComponent;
 class UThunderFighterWeaponComponent;
+class UPlayerLevelComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UBoxComponent;
@@ -47,6 +48,10 @@ protected:
 	/** 武器组件 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
 	TObjectPtr<UThunderFighterWeaponComponent> WeaponComponent;
+
+	/** 经验/等级组件 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Components")
+	TObjectPtr<UPlayerLevelComponent> LevelComponent;
 
 	/** 相机底座：X 跟随玩家（前后），Y 固定在 0（横向移动时相机不跟随） */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ThunderFighter|Camera")

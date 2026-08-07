@@ -1,6 +1,7 @@
 // ThunderFighter - 雷霆战机 EnemyBase 实现
 
 #include "EnemyBase.h"
+#include "EnergyCrystal.h"
 #include "Components/ThunderFighterHealthComponent.h"
 #include "Components/ProjectilePatternComponent.h"
 #include "Components/PickupSpawnComponent.h"
@@ -117,6 +118,21 @@ void AEnemyBase::OnEnemyDefeated()
 	if (PickupSpawn)
 	{
 		PickupSpawn->TrySpawnPickup(GetActorLocation(), DropRate);
+	}
+
+	// 掉落经验球（Roguelike 成长循环）
+	if (EnergyCrystalClass && GetWorld())
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		AEnergyCrystal* Crystal = GetWorld()->SpawnActor<AEnergyCrystal>(
+			EnergyCrystalClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+
+		if (Crystal)
+		{
+			Crystal->Initialize(ExpValue);
+		}
 	}
 
 	// 禁用碰撞和移动，然后销毁
