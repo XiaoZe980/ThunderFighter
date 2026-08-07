@@ -129,6 +129,12 @@ void AThunderFighterGameMode::OnPlayerLevelUp()
 	AThunderFighterPlayerController* PC = Cast<AThunderFighterPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC)
 	{
+		// 切换为鼠标 + UI 输入模式，让玩家能点击强化卡
+		PC->bShowMouseCursor = true;
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PC->SetInputMode(InputMode);
+
 		if (AThunderFighterHUD* HUD = Cast<AThunderFighterHUD>(PC->GetHUD()))
 		{
 			HUD->ShowUpgradeSelect(PendingUpgradeOptions, this);
@@ -163,6 +169,11 @@ void AThunderFighterGameMode::OnUpgradeChosen(int32 SelectedIndex)
 		{
 			HUD->HideUpgradeSelect();
 		}
+
+		// 恢复游戏输入模式，隐藏鼠标
+		PC->bShowMouseCursor = false;
+		FInputModeGameOnly GameMode;
+		PC->SetInputMode(GameMode);
 	}
 
 	// 恢复游戏
