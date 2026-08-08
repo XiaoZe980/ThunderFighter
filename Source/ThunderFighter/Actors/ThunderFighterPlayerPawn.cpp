@@ -3,6 +3,7 @@
 #include "ThunderFighterPlayerPawn.h"
 #include "EnemyBase.h"
 #include "BossEnemy.h"
+#include "Core/ThunderFighterGameInstance.h"
 #include "Components/ThunderFighterHealthComponent.h"
 #include "Components/ThunderFighterWeaponComponent.h"
 #include "Components/PlayerLevelComponent.h"
@@ -73,6 +74,9 @@ void AThunderFighterPlayerPawn::BeginPlay()
 	FVector Pos = GetActorLocation();
 	Pos.Z = 0.0f;
 	SetActorLocation(Pos);
+
+	// 应用局外永久升级（金币购买的属性加成）
+	ApplyPermanentUpgrades();
 
 	// 绑定生命值耗尽事件
 	if (HealthComponent)
@@ -262,4 +266,40 @@ void AThunderFighterPlayerPawn::OnHealthDepleted()
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Player ship destroyed!"));
+}
+
+void AThunderFighterPlayerPawn::ApplyPermanentUpgrades()
+{
+	UThunderFighterGameInstance* GI = Cast<UThunderFighterGameInstance>(GetGameInstance());
+	if (!GI) return;
+
+	// 伤害永久加成（每级 +10%）
+	int32 DamageLv = GI->GetPermanentUpgradeLevel(EPermanentUpgradeType::Damage);
+	if (DamageLv > 0 && WeaponComponent)
+	{
+		WeaponComponent->ApplyModifier(EUpgradeEffect::DamageMultiplier, DamageLv * 0.1f);
+	}
+
+	// 血量永久加成（每级 +25）
+	int32 HealthLv = GI->GetPermanentUpgradeLevel(EPermanentUpgradeType::Health);
+	if (HealthLv > 0 && HealthComponent)
+	{
+		float Bonus = HealthLv * 25.0f;
+		HealthComponent->SetMaxHealth(HealthComponent->GetMaxHealth() + Bonus);
+		HealthComponent->Heal(Bonus);
+	}
+
+	// 射速永久加成（每级 +5%）
+	int32 FireLv = GI->GetPermanentUpgradeLevel(EPermanentUpgradeType::FireRate);
+	if (FireLv > 0 && WeaponComponent)
+	{
+		WeaponComponent->ApplyModifier(EUpgradeEffect::FireRateMultiplier, FireLv * 0.05f);
+	}
+
+	// 移速永久加成（每级 +50）
+	int32 SpeedLv = GI->GetPermanentUpgradeLevel(EPermanentUpgradeType::Speed);
+	if (SpeedLv > 0)
+	{
+		MoveSpeed += SpeedLv * 50.0f;
+	}
 }

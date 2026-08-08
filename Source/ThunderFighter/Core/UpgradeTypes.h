@@ -53,6 +53,18 @@ enum class EUpgradeRarity : uint8
 };
 
 /**
+ * 局外永久升级类型（金币购买，跨局保留）。
+ */
+UENUM(BlueprintType)
+enum class EPermanentUpgradeType : uint8
+{
+	Damage		UMETA(DisplayName = "伤害强化"),
+	Health		UMETA(DisplayName = "装甲强化"),
+	FireRate	UMETA(DisplayName = "射速强化"),
+	Speed		UMETA(DisplayName = "机动强化")
+};
+
+/**
  * 单个强化卡的定义。
  * 通过 DataTable（DT_Upgrades）配置，蓝图可直接编辑。
  */

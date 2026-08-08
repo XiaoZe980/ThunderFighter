@@ -82,12 +82,21 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 		EnemySpawnerRef->StopSpawning();
 	}
 
-	// 更新历史最高分
+	// 更新历史最高分 + 结算金币
 	int32 HighScore = CurrentScore;
 	if (UThunderFighterGameInstance* GI = Cast<UThunderFighterGameInstance>(GetGameInstance()))
 	{
 		GI->TryUpdateHighScore(CurrentScore);
 		HighScore = GI->GetHighScore();
+
+		// 按分数结算金币（每 100 分 1 金币），并保存
+		int32 EarnedGold = CurrentScore / 100;
+		if (EarnedGold > 0)
+		{
+			GI->AddGold(EarnedGold);
+			GI->SaveData();
+			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 本局获得 %d 金币"), EarnedGold);
+		}
 	}
 
 	// 显示游戏结束结算界面

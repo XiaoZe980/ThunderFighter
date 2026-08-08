@@ -5,7 +5,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Core/UpgradeTypes.h"
 #include "ThunderFighterGameInstance.generated.h"
+
+class UThunderFighterSaveGame;
 
 /**
  * ThunderFighter 的 GameInstance。
@@ -55,6 +58,40 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Gameplay")
 	void ResetGameState();
 
+	// ---- 局外养成（金币 + 永久升级） ----
+
+	/** 从磁盘加载存档 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Progression")
+	void LoadSaveData();
+
+	/** 保存到磁盘 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Progression")
+	void SaveData();
+
+	/** 获取金币 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Progression")
+	int32 GetGold() const { return Gold; }
+
+	/** 添加金币 */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Progression")
+	void AddGold(int32 Amount);
+
+	/** 花费金币（成功返回 true） */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Progression")
+	bool SpendGold(int32 Amount);
+
+	/** 获取某个永久升级的等级 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Progression")
+	int32 GetPermanentUpgradeLevel(EPermanentUpgradeType Type) const;
+
+	/** 购买并提升一个永久升级（成功返回 true） */
+	UFUNCTION(BlueprintCallable, Category = "ThunderFighter|Progression")
+	bool UpgradePermanent(EPermanentUpgradeType Type);
+
+	/** 获取某个永久升级的下一级价格 */
+	UFUNCTION(BlueprintPure, Category = "ThunderFighter|Progression")
+	int32 GetUpgradeCost(EPermanentUpgradeType Type) const;
+
 protected:
 	/** 最高分 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Scoring")
@@ -75,4 +112,26 @@ protected:
 	/** 最大武器等级 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Gameplay")
 	int32 MaxWeaponLevel = 5;
+
+	// ---- 局外养成 ----
+
+	/** 金币数量 */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Progression")
+	int32 Gold = 0;
+
+	/** 各永久升级等级 */
+	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Progression")
+	TMap<EPermanentUpgradeType, int32> PermanentUpgradeLevels;
+
+	/** 永久升级基础价格 */
+	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Progression")
+	int32 BaseUpgradeCost = 100;
+
+	/** 每级价格增长倍率 */
+	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Progression")
+	float CostGrowthPerLevel = 1.5f;
+
+	/** 存档引用 */
+	UPROPERTY()
+	TObjectPtr<UThunderFighterSaveGame> SaveGameData;
 };

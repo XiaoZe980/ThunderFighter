@@ -143,6 +143,9 @@ protected:
 	/** 获取世界空间中的屏幕边界 */
 	void GetScreenWorldBounds(float& OutMinX, float& OutMaxX, float& OutMinY, float& OutMaxY) const;
 
+	/** 应用局外永久升级（从 GameInstance 读取，进关卡时调用） */
+	void ApplyPermanentUpgrades();
+
 	/** 射击状态 */
 	UPROPERTY(BlueprintReadOnly, Category = "ThunderFighter|Combat")
 	bool bIsFiring = false;
