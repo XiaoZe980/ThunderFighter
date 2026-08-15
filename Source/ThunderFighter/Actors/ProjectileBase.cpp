@@ -123,6 +123,10 @@ void AProjectileBase::HandleHit(AActor* OtherActor)
 {
 	if (!OtherActor || OtherActor == GetOwner()) return;
 
+	// 子弹之间互不阻挡：玩家子弹穿透敌方子弹（反之亦然）
+	// 避免玩家子弹被敌方子弹销毁、或误判敌方子弹为攻击目标
+	if (OtherActor->IsA<AProjectileBase>()) return;
+
 	// 穿透/弹射时避免对同一目标重复伤害
 	if (HitTargets.Contains(OtherActor)) return;
 
