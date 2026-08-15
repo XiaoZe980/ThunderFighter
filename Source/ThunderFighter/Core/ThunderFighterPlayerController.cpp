@@ -37,10 +37,6 @@ void AThunderFighterPlayerController::BeginPlay()
 		}
 	}
 
-	// 强制游戏输入模式（防止从主菜单/商店的 UI Only 模式残留导致无法操控）
-	bShowMouseCursor = false;
-	FInputModeGameOnly InputMode;
-	SetInputMode(InputMode);
 }
 
 void AThunderFighterPlayerController::SetupInputComponent()
