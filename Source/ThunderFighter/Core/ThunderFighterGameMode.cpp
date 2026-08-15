@@ -98,14 +98,11 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 		GI->TryUpdateHighScore(CurrentScore);
 		HighScore = GI->GetHighScore();
 
-		// 按分数结算金币（每 100 分 1 金币），并保存
-		int32 EarnedGold = CurrentScore / 100;
-		if (EarnedGold > 0)
-		{
-			GI->AddGold(EarnedGold);
-			GI->SaveData();
-			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 本局获得 %d 金币"), EarnedGold);
-		}
+		// 按分数结算金币（每 50 分 1 金币，死亡保底 10 金币），并保存
+		int32 EarnedGold = FMath::Max(CurrentScore / 50, 10);
+		GI->AddGold(EarnedGold);
+		GI->SaveData();
+		UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] 本局获得 %d 金币 (总分 %d)"), EarnedGold, CurrentScore);
 	}
 
 	// 显示游戏结束结算界面

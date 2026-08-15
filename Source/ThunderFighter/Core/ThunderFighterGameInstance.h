@@ -125,7 +125,7 @@ protected:
 
 	/** 永久升级基础价格 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Progression")
-	int32 BaseUpgradeCost = 100;
+	int32 BaseUpgradeCost = 50;
 
 	/** 每级价格增长倍率 */
 	UPROPERTY(EditDefaultsOnly, Category = "ThunderFighter|Progression")
