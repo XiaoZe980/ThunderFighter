@@ -36,6 +36,11 @@ void AThunderFighterPlayerController::BeginPlay()
 			UE_LOG(LogTemp, Log, TEXT("[ThunderFighter] Input Mapping Context added successfully."));
 		}
 	}
+
+	// 强制游戏输入模式（防止从主菜单/商店的 UI Only 模式残留导致无法操控）
+	bShowMouseCursor = false;
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
 }
 
 void AThunderFighterPlayerController::SetupInputComponent()

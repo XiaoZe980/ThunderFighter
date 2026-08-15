@@ -42,6 +42,15 @@ void AThunderFighterGameMode::BeginPlay()
 			Level->OnLevelUp.AddDynamic(this, &AThunderFighterGameMode::OnPlayerLevelUp);
 		}
 	}
+
+	// 强制切换为游戏输入模式（防止从主菜单/商店的 UI Only 模式残留导致无法操控）
+	AThunderFighterPlayerController* PC = Cast<AThunderFighterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		PC->bShowMouseCursor = false;
+		FInputModeGameOnly InputMode;
+		PC->SetInputMode(InputMode);
+	}
 }
 
 void AThunderFighterGameMode::Tick(float DeltaTime)
