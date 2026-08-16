@@ -29,22 +29,22 @@ void UUpgradeShopWidget::RefreshDisplay()
 		GoldText->SetText(FText::FromString(FString::Printf(TEXT("%d"), GI->GetGold())));
 	}
 
-	// 每个升级项：等级 + 价格
-	auto UpdateInfo = [&](UTextBlock* Text, EPermanentUpgradeType Type)
+	// 每个升级项：名称 + 等级 + 价格
+	auto UpdateInfo = [&](UTextBlock* Text, EPermanentUpgradeType Type, const TCHAR* DisplayName)
 	{
 		if (Text)
 		{
 			int32 Level = GI->GetPermanentUpgradeLevel(Type);
 			int32 Cost = GI->GetUpgradeCost(Type);
 			Text->SetText(FText::FromString(
-				FString::Printf(TEXT("Lv.%d  价格: %d"), Level, Cost)));
+				FString::Printf(TEXT("%s  Lv.%d  价格: %d"), DisplayName, Level, Cost)));
 		}
 	};
 
-	UpdateInfo(DamageInfoText, EPermanentUpgradeType::Damage);
-	UpdateInfo(HealthInfoText, EPermanentUpgradeType::Health);
-	UpdateInfo(FireRateInfoText, EPermanentUpgradeType::FireRate);
-	UpdateInfo(SpeedInfoText, EPermanentUpgradeType::Speed);
+	UpdateInfo(DamageInfoText, EPermanentUpgradeType::Damage, TEXT("伤害强化"));
+	UpdateInfo(HealthInfoText, EPermanentUpgradeType::Health, TEXT("装甲强化"));
+	UpdateInfo(FireRateInfoText, EPermanentUpgradeType::FireRate, TEXT("射速强化"));
+	UpdateInfo(SpeedInfoText, EPermanentUpgradeType::Speed, TEXT("机动强化"));
 }
 
 void UUpgradeShopWidget::OnDamageClicked()
