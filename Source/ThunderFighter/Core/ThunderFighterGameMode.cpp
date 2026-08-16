@@ -93,7 +93,10 @@ void AThunderFighterGameMode::OnPlayerDefeated()
 
 	// 更新历史最高分 + 结算金币
 	int32 HighScore = CurrentScore;
-	if (UThunderFighterGameInstance* GI = Cast<UThunderFighterGameInstance>(GetGameInstance()))
+	UThunderFighterGameInstance* GI = Cast<UThunderFighterGameInstance>(GetGameInstance());
+	UE_LOG(LogTemp, Log, TEXT("[Gold] OnPlayerDefeated Score=%d GI=%s"),
+		CurrentScore, GI ? *GI->GetName() : TEXT("NULL (GameInstance 未配置为 ThunderFighterGameInstance!)"));
+	if (GI)
 	{
 		GI->TryUpdateHighScore(CurrentScore);
 		HighScore = GI->GetHighScore();
